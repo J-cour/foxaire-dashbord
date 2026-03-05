@@ -1,281 +1,449 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <title>FoxAir</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    :root{
-      --green:#2db82d;--green-dark:#1e7a1e;--green-dim:rgba(45,184,45,0.15);
-      --blue:#3a7fd4;--blue-dim:rgba(58,127,212,0.18);
-      --red:#e05252;--red-dim:rgba(224,82,82,0.15);
-      --bg:#0f120f;--bg2:#161c16;--bg3:#1d251d;
-      --card:#1d251d;--card2:#232d23;
-      --border:rgba(255,255,255,0.07);
-      --text:#eef5ee;--muted:rgba(255,255,255,0.4);
-    }
-    html{height:100%;overflow:hidden}
-    body{width:100%;height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;display:flex;flex-direction:column}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>FoxAir – Contrôle</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --green:#2db82d;--green-dim:rgba(45,184,45,.14);--green-glow:rgba(45,184,45,.3);
+  --blue:#3a7fd4;--blue-dim:rgba(58,127,212,.16);
+  --red:#e05252;--red-dim:rgba(224,82,82,.14);
+  --orange:#f0ad4e;--orange-dim:rgba(240,173,78,.14);
+  --bg:#0b0f0b;--bg2:#111611;--bg3:#172017;
+  --card:#172017;--card2:#1c261c;
+  --border:rgba(255,255,255,.07);
+  --text:#edf5ed;--muted:rgba(255,255,255,.36);
+  --plant-img:url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=1200&q=80');
+}
+html,body{height:100%;height:100dvh;overflow:hidden;font-family:'Nunito',sans-serif}
+body{background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+#app{display:flex;flex-direction:column;height:100%;height:100dvh}
 
-    /* ── APP SHELL ── */
-    #app{display:flex;flex-direction:column;width:100%;height:100%;height:100dvh}
+/* ═══════════════════════════════════════
+   ÉCRAN DE LOGIN
+═══════════════════════════════════════ */
+#loginScreen{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--plant-img) center/cover;
+  padding:20px;
+}
+#loginScreen::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(160deg,rgba(5,15,5,.82) 0%,rgba(10,25,10,.88) 100%);
+  backdrop-filter:blur(2px);
+}
+#loginScreen>*{position:relative;z-index:1}
 
-    /* ── TOP BAR ── (defined below with plant bg) */
-    .status-pill{display:flex;align-items:center;gap:4px;background:rgba(45,184,45,0.1);border:1px solid rgba(45,184,45,0.25);border-radius:14px;padding:3px 9px;font-size:0.68rem;font-weight:700;color:#6de06d;white-space:nowrap;flex-shrink:0}
-    .sdot{width:5px;height:5px;border-radius:50%;background:#2db82d;animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-    .spacer{flex:1}
-    .clk{font-size:0.72rem;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
+.login-logo{margin-bottom:24px;text-align:center}
+.login-logo svg{width:min(320px,80vw);height:auto;filter:drop-shadow(0 4px 24px rgba(45,184,45,.4))}
 
-    /* ── SCROLL CONTENT ── */
-    .content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.login-box{
+  background:rgba(15,25,15,.92);border:1px solid rgba(45,184,45,.2);
+  border-radius:20px;padding:24px 20px;width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(45,184,45,.08);
+}
+.login-title{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:18px;text-align:center;letter-spacing:.5px}
+.login-title span{color:var(--green)}
 
-    /* ── SCREENS ── */
-    .screen{display:none;padding:12px 12px 0;animation:fadeUp .22s ease both}
-    .screen.active{display:block}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.lfield{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.lfield label{font-size:.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.lfield input{background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'Nunito',sans-serif;font-size:.92rem;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+.lfield input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(45,184,45,.12)}
+.lfield .pwd-wrap{position:relative}
+.lfield .pwd-wrap input{padding-right:42px}
+.lfield .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:.9rem;opacity:.5;user-select:none}
 
-    /* ── BOTTOM NAV ── */
-    .bnav{
-      flex-shrink:0;
-      background:var(--bg2);border-top:1px solid var(--border);
-      display:flex;align-items:stretch;
-      padding-bottom:env(safe-area-inset-bottom,0px);
-    }
-    .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);cursor:pointer;padding:9px 4px;font-family:'Nunito',sans-serif;transition:color .15s;position:relative}
-    .nb .ni{font-size:1.25rem;line-height:1}
-    .nb .nl{font-size:0.58rem;font-weight:800;letter-spacing:0.3px}
-    .nb.active{color:var(--green)}
-    .nb.active::after{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--green);border-radius:0 0 3px 3px}
+.login-machines{margin-bottom:16px}
+.lm-title{font-size:.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.lm-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto}
+.lm-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:9px 12px;cursor:pointer;transition:all .15s;position:relative}
+.lm-item:hover{border-color:rgba(45,184,45,.3);background:rgba(45,184,45,.06)}
+.lm-item.selected{border-color:var(--green);background:var(--green-dim)}
+.lm-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--muted)}
+.lm-dot.on{background:var(--green);box-shadow:0 0 6px var(--green-glow)}
+.lm-dot.off{background:var(--red)}
+.lm-name{font-weight:700;font-size:.85rem;flex:1}
+.lm-ip{font-size:.7rem;color:var(--muted)}
+.lm-del{color:var(--red);font-size:.8rem;cursor:pointer;padding:2px 4px;opacity:.6;transition:opacity .15s}
+.lm-del:hover{opacity:1}
+.lm-add{display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(58,127,212,.06);border:1.5px dashed rgba(58,127,212,.3);border-radius:10px;padding:9px;cursor:pointer;font-size:.8rem;font-weight:700;color:var(--blue);transition:all .15s}
+.lm-add:hover{background:var(--blue-dim);border-color:var(--blue)}
 
-    /* ── CARDS ── */
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px}
-    .ch{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--card2);border-bottom:1px solid var(--border)}
-    .ch h3{font-family:'Rajdhani',sans-serif;font-size:0.98rem;font-weight:700;color:var(--text)}
-    .cb{padding:13px 14px;display:flex;flex-direction:column;gap:13px}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,#1e7a1e,#2db82d);border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:800;color:#fff;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(45,184,45,.3);letter-spacing:.3px}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(45,184,45,.4)}
+.login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.login-err{margin-top:10px;padding:8px 12px;background:var(--red-dim);border:1px solid rgba(224,82,82,.3);border-radius:8px;font-size:.75rem;font-weight:700;color:var(--red);text-align:center;display:none}
 
-    /* ── DEVICE ROW ── */
-    .devrow{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-    .devrow::-webkit-scrollbar{display:none}
-    .dchip{flex-shrink:0;display:flex;align-items:center;gap:5px;background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:5px 12px;cursor:pointer;font-size:0.76rem;font-weight:700;color:var(--muted);transition:all .15s}
-    .dchip.on{border-color:var(--green);color:var(--text);background:var(--green-dim)}
-    .dchip .dd{width:6px;height:6px;border-radius:50%;background:#2db82d;flex-shrink:0}
-    .dchip .dd.w{background:#f0ad4e}
+/* Add machine modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:#111f11;border:1px solid rgba(45,184,45,.2);border-radius:18px;padding:22px;width:100%;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,.7)}
+.modal h3{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:16px;color:var(--text)}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.modal-btns button{flex:1;padding:10px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer}
+.mbtn-ok{background:var(--green-dim);color:var(--green);border:1px solid var(--green-glow)!important}
+.mbtn-cancel{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)!important}
 
-    /* ── UNIT CARD ── */
-    .uc-head{display:flex;align-items:center;gap:7px;padding:9px 12px;background:var(--card2);border-bottom:1px solid var(--border)}
-    .uc-dt{font-size:0.68rem;font-weight:700;color:var(--muted);white-space:nowrap;flex-shrink:0}
-    .uc-ok{flex:1;background:#1e4a1e;color:#7de07d;border-radius:6px;padding:3px 8px;font-weight:700;font-size:0.72rem;text-align:center}
-    .uc-hicons{display:flex;gap:5px;flex-shrink:0}
-    .hi{width:29px;height:29px;background:var(--bg3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;cursor:pointer;border:1px solid var(--border)}
+/* ═══════════════════════════════════════
+   APP PRINCIPALE
+═══════════════════════════════════════ */
+#mainApp{display:none;flex-direction:column;height:100%;height:100dvh}
+#mainApp.show{display:flex}
 
-    .uc-body{padding:12px}
-    .sens-row{display:flex;gap:8px;margin-bottom:12px}
-    .schip{display:flex;align-items:center;gap:5px;background:var(--bg3);border-radius:9px;padding:7px 9px;flex:1;border:1px solid var(--border)}
-    .sci{font-size:0.9rem}
-    .scv{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700}
+/* TOPBAR */
+.topbar{
+  flex-shrink:0;display:flex;align-items:center;gap:10px;
+  padding:6px 14px;padding-top:max(6px,env(safe-area-inset-top));
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;min-height:62px;
+}
+.topbar::before{content:'';position:absolute;inset:0;background:var(--plant-img) center/cover;opacity:.15;z-index:0}
+.topbar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,20,10,.9) 0%,rgba(10,20,10,.7) 100%);z-index:0}
+.topbar>*{position:relative;z-index:1}
+.logo-wrap svg{height:48px;width:auto;filter:drop-shadow(0 2px 8px rgba(45,184,45,.5))}
+.spacer{flex:1}
 
-    .modebar{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
-    .ml{font-size:0.78rem;font-weight:700;color:var(--muted)}
-    .ml.on{color:var(--text)}
-    .tog{position:relative;width:44px;height:25px;cursor:pointer;display:inline-block;flex-shrink:0}
-    .tog input{opacity:0;width:0;height:0;position:absolute}
-    .tt{position:absolute;inset:0;border-radius:13px;background:rgba(255,255,255,0.08);border:1.5px solid var(--border);transition:background .2s}
-    .th{position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 2px 5px rgba(0,0,0,0.4)}
-    .tog input:checked~.tt{background:var(--blue)}
-    .tog input:checked~.th{transform:translateX(19px)}
+/* Machine selector in topbar */
+.mach-sel-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.mach-sel{background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:10px;padding:4px 8px;font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:700;color:var(--text);max-width:130px;cursor:pointer}
+.mach-add-btn{width:26px;height:26px;border-radius:8px;background:var(--blue-dim);border:1px solid rgba(58,127,212,.3);color:var(--blue);font-size:.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 
-    .bigcs{display:flex;gap:8px;margin-bottom:12px}
-    .bigc{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;background:var(--bg3);border-radius:12px;padding:12px 8px;border:1px solid var(--border)}
-    .bigi{font-size:2.4rem;animation:spin 8s linear infinite}
-    .bigi.still{animation:none}
-    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-    .bigdots{display:flex;gap:5px}
-    .bigdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:background .15s}
-    .bigdot.on{background:var(--blue)}
-    .bigv{font-family:'Rajdhani',sans-serif;font-size:1.3rem;font-weight:700}
+.conn-badge{display:flex;align-items:center;gap:4px;border-radius:12px;padding:3px 9px;font-size:.62rem;font-weight:800;white-space:nowrap;flex-shrink:0;border:1px solid;transition:all .3s;cursor:pointer}
+.conn-badge.disconnected{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:#e08080}
+.conn-badge.connecting{background:rgba(240,173,78,.1);border-color:rgba(240,173,78,.3);color:var(--orange)}
+.conn-badge.connected{background:rgba(45,184,45,.1);border-color:rgba(45,184,45,.3);color:#6de06d}
+.cbdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.conn-badge.disconnected .cbdot{background:var(--red)}
+.conn-badge.connecting .cbdot{background:var(--orange);animation:pulse 1s infinite}
+.conn-badge.connected .cbdot{background:var(--green);animation:pulse 2.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.clk{font-size:.68rem;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
 
-    .uc-foot{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--card2);border-top:1px solid var(--border);gap:6px}
-    .fib{width:33px;height:33px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);font-size:0.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-    .cgrp{display:flex;align-items:center;gap:5px}
-    .cbi{font-size:0.85rem}
-    .cbtn{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg3);font-size:0.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-    .cv{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--blue);min-width:48px;text-align:center}
-    .pwr{width:33px;height:33px;border-radius:8px;border:none;background:var(--red-dim);color:var(--red);font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s}
-    .pwr.on{background:var(--green-dim);color:var(--green)}
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.screen{display:none;padding:10px 10px 0;animation:fadeUp .2s ease both}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-    /* QUICK STATS */
-    .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-    .qcard{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:11px 12px;display:flex;align-items:center;gap:9px}
-    .qicon{font-size:1.6rem}
-    .qlabel{font-size:0.64rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
-    .qval{font-family:'Rajdhani',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text)}
+/* BOTTOM NAV */
+.bnav{flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);cursor:pointer;padding:8px 2px;font-family:'Nunito',sans-serif;transition:color .15s;position:relative}
+.nb .ni{font-size:1.2rem;line-height:1}
+.nb .nl{font-size:.53rem;font-weight:800}
+.nb.active{color:var(--green)}
+.nb.active::after{content:'';position:absolute;top:0;left:15%;right:15%;height:2px;background:var(--green);border-radius:0 0 3px 3px}
 
-    /* PARAM ROW */
-    .prow{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px}
-    .plbl{font-size:0.8rem;font-weight:600;color:var(--muted);flex:1;line-height:1.3}
-    .pctrl{display:flex;align-items:center;gap:5px;flex-shrink:0}
-    .pm{width:27px;height:27px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg3);font-size:0.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-    .pv{font-family:'Rajdhani',sans-serif;font-size:0.95rem;font-weight:700;min-width:45px;text-align:center;color:var(--text)}
-    .psel{background:var(--bg3);border:1.5px solid var(--border);border-radius:7px;padding:4px 7px;font-family:'Nunito',sans-serif;font-size:0.76rem;font-weight:600;color:var(--text)}
-    .pdiv{height:1px;background:var(--border)}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px}
+.ch{display:flex;align-items:center;gap:7px;padding:10px 13px;background:var(--card2);border-bottom:1px solid var(--border)}
+.ch h3{font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);flex:1}
+.cb{padding:12px 13px;display:flex;flex-direction:column;gap:11px}
 
-    /* WIFI */
-    .wf{display:flex;flex-direction:column;gap:4px}
-    .wl{font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
-    .wi{background:var(--bg3);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:0.88rem;color:var(--text);outline:none;transition:border-color .2s;width:100%}
-    .wi:focus{border-color:var(--blue)}
-    .infobox{background:var(--bg3);border-radius:10px;padding:10px;border:1px solid var(--border)}
-    .ir{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.76rem}
-    .ir:last-child{border:none}
-    .ik{font-weight:700;color:var(--muted)}
-    .iv{font-weight:600}
+/* PARAM ROW */
+.prow{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:34px}
+.plbl{font-size:.78rem;font-weight:600;color:var(--muted);flex:1;line-height:1.3}
+.pctrl{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.pm{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg3);font-size:.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:background .15s}
+.pm:hover{background:rgba(255,255,255,.1)}
+.pv{font-family:'Rajdhani',sans-serif;font-size:.92rem;font-weight:700;min-width:46px;text-align:center}
+.psel{background:var(--bg3);border:1.5px solid var(--border);border-radius:7px;padding:4px 7px;font-family:'Nunito',sans-serif;font-size:.74rem;font-weight:600;color:var(--text)}
+.pdiv{height:1px;background:var(--border)}
+.tog{position:relative;width:42px;height:24px;cursor:pointer;display:inline-block;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tt{position:absolute;inset:0;border-radius:12px;background:rgba(255,255,255,.07);border:1.5px solid var(--border);transition:background .2s}
+.th{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.tog input:checked~.tt{background:var(--blue)}
+.tog input:checked~.th{transform:translateX(18px)}
 
-    /* BUTTONS */
-    .btn-g{background:var(--green-dim);color:var(--green);border:1px solid rgba(45,184,45,0.25);border-radius:10px;padding:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;width:100%;text-align:center}
-    .btn-b{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(58,127,212,0.25);border-radius:10px;padding:10px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;width:100%;text-align:center}
-    .btn-r{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,82,82,0.25);border-radius:8px;padding:7px 14px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer}
+/* BUTTONS */
+.btn-g{background:var(--green-dim);color:var(--green);border:1px solid rgba(45,184,45,.25);border-radius:10px;padding:10px;font-family:'Nunito',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;width:100%;text-align:center;transition:background .15s}
+.btn-g:hover{background:rgba(45,184,45,.25)}
+.btn-b{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(58,127,212,.25);border-radius:10px;padding:10px;font-family:'Nunito',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;width:100%;text-align:center}
+.btn-r{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,82,82,.25);border-radius:8px;padding:7px 13px;font-family:'Nunito',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer}
+.btn-o{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(240,173,78,.25);border-radius:8px;padding:7px 13px;font-family:'Nunito',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer}
 
-    /* DATETIME */
-    .tsrow{display:flex;align-items:center;gap:8px;justify-content:center}
-    .tscol{display:flex;flex-direction:column;align-items:center;gap:4px}
-    .tsa{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg3);font-size:0.85rem;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer}
-    .tsn{font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;min-width:48px;text-align:center}
-    .tsp{font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;color:var(--muted)}
-    .datev{background:var(--bg3);border:1.5px solid var(--border);border-radius:9px;padding:9px 16px;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;text-align:center}
+/* HOME */
+.uc-head{display:flex;align-items:center;gap:6px;padding:8px 11px;background:var(--card2);border-bottom:1px solid var(--border)}
+.uc-dt{font-size:.65rem;font-weight:700;color:var(--muted);flex-shrink:0}
+.uc-ok{flex:1;border-radius:5px;padding:3px 8px;font-weight:700;font-size:.7rem;text-align:center;transition:all .3s}
+.uc-ok.ok{background:#1a3d1a;color:#7de07d}
+.uc-ok.err{background:#3d1a1a;color:#e07d7d}
+.uc-ok.wait{background:#2a2a10;color:#d0c070}
+.uc-hicons{display:flex;gap:4px;flex-shrink:0}
+.hi{width:28px;height:28px;background:var(--bg3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.82rem;cursor:pointer;border:1px solid var(--border);transition:background .15s}
+.hi:hover{background:rgba(255,255,255,.1)}
+.sens-row{display:flex;gap:7px;margin-bottom:10px}
+.schip{display:flex;align-items:center;gap:4px;background:var(--bg3);border-radius:8px;padding:7px 9px;flex:1;border:1px solid var(--border)}
+.sci{font-size:.9rem}
+.scv{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700}
+.modebar{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
+.ml{font-size:.75rem;font-weight:700;color:var(--muted);transition:color .2s}
+.ml.on{color:var(--text)}
+.bigcs{display:flex;gap:7px;margin-bottom:10px}
+.bigc{display:flex;flex-direction:column;align-items:center;gap:7px;flex:1;background:var(--bg3);border-radius:12px;padding:12px 8px;border:1px solid var(--border)}
+.bigi{font-size:2.4rem;animation:spin 8s linear infinite}
+.bigi.still{animation:none}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.bigdots{display:flex;gap:5px}
+.bigdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.1);cursor:pointer;transition:background .15s}
+.bigdot.on{background:var(--blue)}
+.bigv{font-family:'Rajdhani',sans-serif;font-size:1.3rem;font-weight:700}
+.big-lbl{font-size:.6rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.uc-foot{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--card2);border-top:1px solid var(--border);gap:6px}
+.fib{width:33px;height:33px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);font-size:.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+.fib:hover{background:rgba(255,255,255,.08)}
+.cgrp{display:flex;align-items:center;gap:5px}
+.cbtn{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg3);font-size:.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+.cv{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--blue);min-width:48px;text-align:center}
+.pwr{width:33px;height:33px;border-radius:8px;border:none;font-size:.95rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+.pwr.off{background:var(--red-dim);color:var(--red)}
+.pwr.on{background:var(--green-dim);color:var(--green)}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.qcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:9px}
+.qicon{font-size:1.5rem}
+.qlbl{font-size:.62rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.qval{font-family:'Rajdhani',sans-serif;font-size:1.25rem;font-weight:700}
 
-    /* SCHEDULER */
-    .sslot{background:var(--bg3);border-radius:11px;padding:11px;border:1px solid var(--border);margin-bottom:9px}
-    .sdays{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
-    .sdaybtn{background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:3px 6px;font-size:0.68rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s}
-    .sdaybtn.on{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
-    .stimes{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-    .stlbl{font-size:0.68rem;font-weight:700;color:var(--muted)}
-    .stsel{background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:4px 5px;font-family:'Nunito',sans-serif;font-size:0.74rem;font-weight:700;color:var(--text)}
-    .xbtn{cursor:pointer;color:var(--red);font-size:0.9rem;padding:4px 6px}
+/* MACHINES SCREEN */
+.mach-grid{display:flex;flex-direction:column;gap:10px}
+.mach-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s}
+.mach-card:hover{border-color:rgba(45,184,45,.3)}
+.mach-card.active-mach{border-color:var(--green);box-shadow:0 0 16px rgba(45,184,45,.15)}
+.mach-card-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--card2)}
+.mach-card-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.mach-card-dot.on{background:var(--green);box-shadow:0 0 8px var(--green-glow)}
+.mach-card-dot.off{background:var(--red)}
+.mach-card-dot.wait{background:var(--orange);animation:pulse 1s infinite}
+.mach-card-name{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;flex:1}
+.mach-card-ip{font-size:.7rem;color:var(--muted)}
+.mach-card-actions{display:flex;gap:6px;flex-shrink:0}
+.mca{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.78rem;cursor:pointer;border:1px solid var(--border);background:var(--bg3);transition:background .15s}
+.mca:hover{background:rgba(255,255,255,.1)}
+.mach-card-stats{display:flex;gap:8px;padding:10px 14px;flex-wrap:wrap}
+.mcs{display:flex;align-items:center;gap:5px;background:var(--bg3);border-radius:7px;padding:5px 9px;flex:1;min-width:80px;border:1px solid var(--border)}
+.mcs-icon{font-size:.85rem}
+.mcs-v{font-family:'Rajdhani',sans-serif;font-size:.9rem;font-weight:700}
+.mcs-l{font-size:.58rem;color:var(--muted);font-weight:700}
+.mach-card-foot{padding:8px 14px;display:flex;gap:7px;border-top:1px solid var(--border)}
 
-    /* PAGE TITLE */
-    .pt{font-family:'Rajdhani',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:7px}
-    .logo-real{flex-shrink:0;display:flex;align-items:center}
-    .logo-svg{height:38px;width:auto}
+/* WIFI FIELDS */
+.wf{display:flex;flex-direction:column;gap:3px}
+.wl{font-size:.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.wi{background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:.86rem;color:var(--text);outline:none;transition:border-color .2s;width:100%}
+.wi:focus{border-color:var(--blue)}
+.ip-row{display:flex;align-items:center;gap:3px}
+.ip-oct{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:7px;padding:8px 3px;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--text);text-align:center;outline:none;-moz-appearance:textfield;transition:border-color .2s}
+.ip-oct:focus{border-color:var(--blue)}
+.ip-oct::-webkit-inner-spin-button,.ip-oct::-webkit-outer-spin-button{-webkit-appearance:none}
+.ip-dot{color:var(--muted);font-weight:700;flex-shrink:0}
+.infobox{background:var(--bg3);border-radius:9px;padding:9px;border:1px solid var(--border)}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);font-size:.73rem}
+.ir:last-child{border:none}
+.ik{font-weight:700;color:var(--muted)}
+.iv{font-weight:600}
+.latbar-bg{background:rgba(255,255,255,.07);border-radius:4px;height:5px;overflow:hidden;margin:4px 0}
+.latbar-fill{height:100%;border-radius:4px;transition:width .8s,background .5s;width:0%}
+.api-log{background:rgba(0,0,0,.55);border-radius:8px;padding:8px;border:1px solid var(--border);font-family:'Courier New',monospace;font-size:.65rem;color:#7de07d;max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.log-entry{line-height:1.45}
+.log-entry.err{color:var(--red)}
+.log-entry.warn{color:var(--orange)}
+.log-entry.ok{color:var(--green)}
+.log-entry.info{color:var(--blue)}
 
-    /* PLANT BG on topbar */
-    .topbar{
-      flex-shrink:0;padding:10px 14px 8px;
-      padding-top:max(10px, env(safe-area-inset-top));
-      background: linear-gradient(90deg, rgba(8,20,8,0.97) 0%, rgba(12,28,12,0.97) 100%);
-      border-bottom:1px solid rgba(45,140,45,0.25);
-      display:flex;align-items:center;gap:8px;
-      position:relative;overflow:hidden;
-    }
-    .topbar::before{
-      content:'';position:absolute;inset:0;
-      background-image:url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&q=60');
-      background-size:cover;background-position:center;
-      opacity:0.12;z-index:0;
-    }
-    .topbar>*{position:relative;z-index:1}
-
-    /* TOAST */
-    .toast{
-      position:fixed;
-      bottom:calc(env(safe-area-inset-bottom,0px) + 72px);
-      left:50%;transform:translateX(-50%) translateY(16px);
-      background:rgba(20,40,20,0.97);color:#90e090;
-      border:1px solid rgba(45,184,45,0.35);border-radius:11px;
-      padding:9px 18px;font-weight:700;font-size:0.82rem;
-      box-shadow:0 8px 24px rgba(0,0,0,0.6);z-index:999;
-      opacity:0;transition:all .28s cubic-bezier(.34,1.56,.64,1);
-      pointer-events:none;white-space:nowrap;max-width:92vw;text-align:center;
-    }
-    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-    .pb{height:12px}
-  </style>
+/* DATETIME */
+.tsrow{display:flex;align-items:center;gap:7px;justify-content:center}
+.tscol{display:flex;flex-direction:column;align-items:center;gap:3px}
+.tsa{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg3);font-size:.85rem;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+.tsn{font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;min-width:48px;text-align:center}
+.tsp{font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;color:var(--muted)}
+.datev{background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;padding:9px 15px;font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;text-align:center}
+.sslot{background:var(--bg3);border-radius:10px;padding:10px;border:1px solid var(--border);margin-bottom:8px}
+.sdays{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px}
+.sdaybtn{background:var(--bg);border:1.5px solid var(--border);border-radius:5px;padding:2px 5px;font-size:.64rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none}
+.sdaybtn.on{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+.stimes{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.stlbl{font-size:.64rem;font-weight:700;color:var(--muted)}
+.stsel{background:var(--bg);border:1.5px solid var(--border);border-radius:5px;padding:3px 4px;font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:700;color:var(--text)}
+.xbtn{cursor:pointer;color:var(--red);font-size:.85rem;padding:3px 5px;margin-left:auto}
+.pt{font-family:'Rajdhani',sans-serif;font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.hint{font-size:.71rem;color:var(--muted);line-height:1.55;background:rgba(58,127,212,.07);border-radius:8px;padding:8px 11px;border:1px solid rgba(58,127,212,.15)}
+.flow-bar-bg{background:rgba(255,255,255,.07);border-radius:5px;height:7px;overflow:hidden}
+.flow-bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .8s}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
+.toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 68px);left:50%;transform:translateX(-50%) translateY(14px);background:rgba(10,25,10,.97);color:#90e090;border:1px solid rgba(45,184,45,.3);border-radius:10px;padding:9px 18px;font-weight:700;font-size:.8rem;box-shadow:0 6px 20px rgba(0,0,0,.6);z-index:9999;opacity:0;transition:all .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.pb{height:10px}
+</style>
 </head>
 <body>
-<div id="app">
 
-  <!-- TOP BAR -->
+<!-- ═══════════════════════════════════════════════════
+     ÉCRAN DE LOGIN / CONNEXION
+═══════════════════════════════════════════════════ -->
+<div id="loginScreen">
+
+  <!-- Logo grand format -->
+  <div class="login-logo">
+    <svg viewBox="0 0 380 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lgBg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1c3a1c"/>
+          <stop offset="100%" stop-color="#0a180a"/>
+        </linearGradient>
+        <linearGradient id="lgFox" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#5ee05e"/>
+          <stop offset="100%" stop-color="#1a7a1a"/>
+        </linearGradient>
+        <linearGradient id="lgAir" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#cccccc"/>
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Plaque fond -->
+      <rect x="2" y="2" width="376" height="96" rx="16" fill="url(#lgBg)" stroke="#2a5a2a" stroke-width="2"/>
+      <!-- Reflet haut -->
+      <rect x="10" y="4" width="360" height="20" rx="8" fill="rgba(255,255,255,0.04)"/>
+      <!-- Vagues bleues -->
+      <path d="M55,18 Q75,9 95,18 Q115,27 135,18 Q155,9 175,18 Q195,27 215,18 Q235,9 255,18 Q275,27 295,18 Q315,9 335,18" fill="none" stroke="#4a9fd4" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
+      <path d="M60,26 Q82,16 104,26 Q126,36 148,26 Q170,16 192,26 Q214,36 236,26 Q258,16 280,26 Q302,36 324,26" fill="none" stroke="#6abff0" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+      <!-- FOX -->
+      <text x="18" y="82" font-family="Arial Black,Impact,sans-serif" font-size="66" font-weight="900" font-style="italic" fill="url(#lgFox)" letter-spacing="-2" filter="url(#glow)">Fox</text>
+      <!-- Air -->
+      <text x="165" y="82" font-family="Arial Black,Impact,sans-serif" font-size="66" font-weight="900" font-style="italic" fill="url(#lgAir)" letter-spacing="-2">Air</text>
+      <!-- Ligne bleue -->
+      <line x1="18" y1="89" x2="362" y2="89" stroke="#4a9fd4" stroke-width="2.5"/>
+      <line x1="18" y1="94" x2="362" y2="94" stroke="#1a5fa8" stroke-width="1.2" opacity=".5"/>
+      <!-- Tagline -->
+      <text x="361" y="100" font-family="Arial,sans-serif" font-size="11" font-style="italic" fill="#999" text-anchor="end" letter-spacing=".5">evaporative.technology</text>
+    </svg>
+  </div>
+
+  <!-- Boîte de connexion -->
+  <div class="login-box">
+    <div class="login-title">Connexion à votre installation <span>FoxAir</span></div>
+
+    <!-- Liste des machines enregistrées -->
+    <div class="login-machines">
+      <div class="lm-title">Appareils enregistrés</div>
+      <div class="lm-list" id="lmList">
+        <!-- Rempli par JS -->
+      </div>
+      <div class="lm-add" onclick="showAddModal()" style="margin-top:6px">
+        <span>＋</span> Ajouter un appareil
+      </div>
+    </div>
+
+    <!-- Champs connexion -->
+    <div class="lfield">
+      <label>IP ou nom d'hôte</label>
+      <input type="text" id="loginIP" placeholder="192.168.1.100 ou aclimax.local" autocomplete="off" autocapitalize="none"/>
+    </div>
+    <div class="lfield">
+      <label>Mot de passe</label>
+      <div class="pwd-wrap">
+        <input type="password" id="loginPwd" placeholder="••••••••" autocomplete="current-password"/>
+        <span class="eye" onclick="toggleLoginPwd()">👁️</span>
+      </div>
+    </div>
+
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">🔗 Se connecter</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL AJOUTER MACHINE
+═══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="addMachineModal">
+  <div class="modal">
+    <h3>➕ Ajouter un appareil</h3>
+    <div class="lfield"><label>Nom de l'appareil</label><input type="text" id="newMachName" placeholder="Ex: Entrepôt principal"/></div>
+    <div class="lfield"><label>IP ou nom d'hôte</label><input type="text" id="newMachIP" placeholder="192.168.1.100" autocapitalize="none"/></div>
+    <div class="lfield"><label>Port HTTP (défaut 80)</label><input type="number" id="newMachPort" value="80" min="1" max="65535"/></div>
+    <div class="lfield"><label>Mot de passe</label><input type="password" id="newMachPwd" placeholder="••••••••"/></div>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="hideAddModal()">Annuler</button>
+      <button class="mbtn-ok" onclick="addMachine()">✅ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     APP PRINCIPALE
+═══════════════════════════════════════════════════ -->
+<div id="mainApp">
+
+  <!-- TOPBAR -->
   <div class="topbar">
-    <!-- LOGO EXACT FOXAIR -->
-    <div class="logo-real">
-      <svg viewBox="0 0 320 90" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
-        <!-- Plaque fond sombre arrondie -->
-        <rect x="1" y="1" width="318" height="88" rx="14" ry="14" fill="#1a2a1a" stroke="#3a5a3a" stroke-width="2"/>
-        <!-- Fond dégradé intérieur -->
-        <rect x="3" y="3" width="314" height="84" rx="12" ry="12" fill="url(#lgBg)"/>
+    <div class="logo-wrap">
+      <svg viewBox="0 0 340 88" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="lgBg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#1e341e"/>
-            <stop offset="100%" stop-color="#0f1f0f"/>
-          </linearGradient>
-          <linearGradient id="lgFox" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#4ec84e"/>
-            <stop offset="100%" stop-color="#1e7a1e"/>
-          </linearGradient>
-          <linearGradient id="lgAir" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="100%" stop-color="#cccccc"/>
-          </linearGradient>
+          <linearGradient id="tb-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a301a"/><stop offset="100%" stop-color="#0a160a"/></linearGradient>
+          <linearGradient id="tb-fox" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#55e055"/><stop offset="100%" stop-color="#1a7a1a"/></linearGradient>
+          <linearGradient id="tb-air" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#ccc"/></linearGradient>
         </defs>
-        <!-- Vagues bleues au-dessus du texte -->
-        <path d="M60,18 Q80,10 100,18 Q120,26 140,18 Q160,10 180,18 Q200,26 220,18 Q240,10 260,18" fill="none" stroke="#3a8fd4" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M70,24 Q90,16 110,24 Q130,32 150,24 Q170,16 190,24 Q210,32 230,24 Q250,16 270,24" fill="none" stroke="#5aaff0" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
-        <!-- Texte FOX -->
-        <text x="18" y="68" font-family="Arial Black, sans-serif" font-size="52" font-weight="900" font-style="italic" fill="url(#lgFox)" letter-spacing="-1">Fox</text>
-        <!-- Texte Air -->
-        <text x="128" y="68" font-family="Arial Black, sans-serif" font-size="52" font-weight="900" font-style="italic" fill="url(#lgAir)" letter-spacing="-1">Air</text>
-        <!-- Ligne bleue sous le texte -->
-        <line x1="18" y1="74" x2="302" y2="74" stroke="#3a8fd4" stroke-width="2.5"/>
-        <line x1="18" y1="78" x2="302" y2="78" stroke="#1a5fa8" stroke-width="1.2" opacity="0.6"/>
-        <!-- evaporative.technology -->
-        <text x="302" y="87" font-family="Arial, sans-serif" font-size="10" font-style="italic" fill="#aaaaaa" text-anchor="end" letter-spacing="0.5">evaporative.technology</text>
+        <rect x="1" y="1" width="338" height="86" rx="13" fill="url(#tb-bg)" stroke="#255a25" stroke-width="1.5"/>
+        <path d="M42,14 Q60,7 78,14 Q96,21 114,14 Q132,7 150,14 Q168,21 186,14 Q204,7 222,14 Q240,21 258,14 Q276,7 294,14" fill="none" stroke="#3a8fd4" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M46,21 Q66,13 86,21 Q106,29 126,21 Q146,13 166,21 Q186,29 206,21 Q226,13 246,21" fill="none" stroke="#5aaff0" stroke-width="1.3" stroke-linecap="round" opacity=".55"/>
+        <text x="14" y="70" font-family="Arial Black,Impact,sans-serif" font-size="58" font-weight="900" font-style="italic" fill="url(#tb-fox)" letter-spacing="-1.5">Fox</text>
+        <text x="153" y="70" font-family="Arial Black,Impact,sans-serif" font-size="58" font-weight="900" font-style="italic" fill="url(#tb-air)" letter-spacing="-1.5">Air</text>
+        <line x1="14" y1="77" x2="323" y2="77" stroke="#3a8fd4" stroke-width="2.2"/>
+        <line x1="14" y1="82" x2="323" y2="82" stroke="#1a5fa8" stroke-width="1" opacity=".45"/>
+        <text x="322" y="87" font-family="Arial,sans-serif" font-size="9" font-style="italic" fill="#777" text-anchor="end">evaporative.technology</text>
       </svg>
     </div>
     <div class="spacer"></div>
-    <div class="status-pill"><div class="sdot"></div>Système Ok</div>
-    <div class="clk" id="clk">14:53</div>
+    <div class="mach-sel-wrap">
+      <select class="mach-sel" id="machSelect" onchange="switchMachine()">
+        <!-- Rempli par JS -->
+      </select>
+      <div class="mach-add-btn" onclick="showAddModal()" title="Ajouter un appareil">＋</div>
+    </div>
+    <div class="conn-badge disconnected" id="connBadge" onclick="go('machines')">
+      <div class="cbdot"></div><span id="connBadgeTxt">Non connecté</span>
+    </div>
+    <div class="clk" id="clk">--:--</div>
   </div>
 
   <!-- CONTENT -->
   <div class="content">
 
-    <!-- ═══ HOME ═══ -->
+    <!-- ════ ACCUEIL ════ -->
     <div class="screen active" id="s-home">
-      <div class="devrow">
-        <div class="dchip on" onclick="selDev(this,'Entrepôt')"><div class="dd"></div>Entrepôt</div>
-        <div class="dchip" onclick="selDev(this,'Bureau')"><div class="dd w"></div>Bureau</div>
-        <div class="dchip" onclick="selDev(this,'Hangar')"><div class="dd"></div>Hangar</div>
-      </div>
-
-      <!-- Main unit -->
       <div class="card">
         <div class="uc-head">
-          <div class="uc-dt" id="ucDate">04/03/2026 – 14:53</div>
-          <div class="uc-ok">Système Ok</div>
+          <div class="uc-dt" id="ucDate">--/--/---- – --:--</div>
+          <div class="uc-ok wait" id="ucStatus">— En attente —</div>
           <div class="uc-hicons">
-            <div class="hi" onclick="go('reglages')">⚙️</div>
-            <div class="hi" onclick="go('wifi')">📶</div>
+            <div class="hi" onclick="go('reglages')" title="Réglages">⚙️</div>
+            <div class="hi" onclick="go('wifi')" title="Réseau">📶</div>
+            <div class="hi" id="refreshBtn" onclick="manualRefresh()" title="Actualiser">🔄</div>
           </div>
         </div>
-        <div class="uc-body">
+        <div style="padding:12px">
           <div class="sens-row">
-            <div class="schip"><span class="sci">🏠</span><span class="scv" id="sAmb">17.0°C</span></div>
-            <div class="schip"><span class="sci">💧</span><span class="scv" id="sHygro">54%</span></div>
-            <div class="schip"><span class="sci">❄️</span><span class="scv" id="sSortie">15.0°C</span></div>
+            <div class="schip"><span class="sci">🏠</span><span class="scv" id="sAmb">--.-°C</span></div>
+            <div class="schip"><span class="sci">💧</span><span class="scv" id="sHygro">--%</span></div>
+            <div class="schip"><span class="sci">❄️</span><span class="scv" id="sSortie">--.-°C</span></div>
           </div>
           <div class="modebar">
             <span class="ml on" id="lManu">Manu</span>
-            <label class="tog"><input type="checkbox" id="modeTog" onchange="onMode()" checked/><div class="tt"></div><div class="th"></div></label>
+            <label class="tog"><input type="checkbox" id="modeTog" onchange="setMode()"/><div class="tt"></div><div class="th"></div></label>
             <span class="ml" id="lAuto">Auto</span>
           </div>
           <div class="bigcs">
             <div class="bigc">
+              <span class="big-lbl">Ventilation</span>
               <div class="bigi" id="fanIcon">🌀</div>
               <div class="bigdots" id="fanDots">
                 <div class="bigdot on" onclick="setFan(10,0)"></div>
@@ -286,6 +454,7 @@
               <div class="bigv" id="fanV">10%</div>
             </div>
             <div class="bigc">
+              <span class="big-lbl">Aspersion</span>
               <div class="bigi still">💧</div>
               <div class="bigdots" id="watDots">
                 <div class="bigdot on" onclick="setWat(20,0)"></div>
@@ -300,7 +469,7 @@
         <div class="uc-foot">
           <div class="fib" onclick="go('plus')">🔆</div>
           <div class="cgrp">
-            <span class="cbi">🌡️</span>
+            <span style="font-size:.85rem">🌡️</span>
             <div class="cbtn" onclick="chCons(-0.5)">−</div>
             <span class="cv" id="consV">13.5°C</span>
             <div class="cbtn" onclick="chCons(0.5)">+</div>
@@ -308,17 +477,24 @@
           <div class="pwr on" id="pwrBtn" onclick="togglePwr()">⏻</div>
         </div>
       </div>
-
       <div class="qgrid">
-        <div class="qcard"><div class="qicon">🌀</div><div><div class="qlabel">Ventilation</div><div class="qval" id="qFan">10%</div></div></div>
-        <div class="qcard"><div class="qicon">💧</div><div><div class="qlabel">Aspersion</div><div class="qval" id="qWat">20%</div></div></div>
-        <div class="qcard"><div class="qicon">🌡️</div><div><div class="qlabel">Consigne</div><div class="qval" id="qCons">13.5°C</div></div></div>
-        <div class="qcard"><div class="qicon">⏻</div><div><div class="qlabel">État</div><div class="qval" id="qPwr" style="color:var(--green)">ON</div></div></div>
+        <div class="qcard"><div class="qicon">🌀</div><div><div class="qlbl">Ventilation</div><div class="qval" id="qFan">10%</div></div></div>
+        <div class="qcard"><div class="qicon">💧</div><div><div class="qlbl">Aspersion</div><div class="qval" id="qWat">20%</div></div></div>
+        <div class="qcard"><div class="qicon">🌡️</div><div><div class="qlbl">Consigne</div><div class="qval" id="qCons">13.5°C</div></div></div>
+        <div class="qcard"><div class="qicon">⏻</div><div><div class="qlbl">État</div><div class="qval" id="qPwr" style="color:var(--green)">ON</div></div></div>
       </div>
       <div class="pb"></div>
     </div>
 
-    <!-- ═══ RÉGLAGES ═══ -->
+    <!-- ════ MACHINES ════ -->
+    <div class="screen" id="s-machines">
+      <div class="pt">🖥️ Mes appareils</div>
+      <div class="mach-grid" id="machGrid"><!-- Rempli par JS --></div>
+      <button class="btn-b" onclick="showAddModal()" style="margin-bottom:10px">＋ Ajouter un appareil</button>
+      <div class="pb"></div>
+    </div>
+
+    <!-- ════ RÉGLAGES ════ -->
     <div class="screen" id="s-reglages">
       <div class="pt">⚙️ Réglages</div>
       <div class="card">
@@ -354,15 +530,51 @@
         </div>
       </div>
       <div class="card">
+        <div class="ch"><span>🔄</span><h3>Vanne 3 voies – Débit d'eau</h3>
+          <label class="tog" style="margin-left:auto"><input type="checkbox" id="v3vTog" onchange="onV3V()" checked/><div class="tt"></div><div class="th"></div></label>
+        </div>
+        <div class="cb" id="v3vBody">
+          <div class="prow"><span class="plbl">Mode de régulation</span>
+            <select class="psel" id="v3vMode" onchange="onV3VMode()">
+              <option value="prop">Proportionnel</option>
+              <option value="tor">Tout ou rien</option>
+              <option value="manu">Manuel</option>
+            </select>
+          </div>
+          <div class="pdiv"></div>
+          <div class="prow"><span class="plbl">Ouverture mini</span><div class="pctrl"><div class="pm" onclick="chP('v3vMin',-5)">−</div><span class="pv" id="v3vMin">10%</span><div class="pm" onclick="chP('v3vMin',5)">+</div></div></div>
+          <div class="pdiv"></div>
+          <div class="prow"><span class="plbl">Ouverture maxi</span><div class="pctrl"><div class="pm" onclick="chP('v3vMax',-5)">−</div><span class="pv" id="v3vMax">100%</span><div class="pm" onclick="chP('v3vMax',5)">+</div></div></div>
+          <div class="pdiv"></div>
+          <div id="v3vManuelRow" style="display:none">
+            <div class="prow"><span class="plbl" style="color:var(--orange)">⚡ Ouverture manuelle</span><div class="pctrl"><div class="pm" onclick="chP('v3vManu',-5)">−</div><span class="pv" id="v3vManu">50%</span><div class="pm" onclick="chP('v3vManu',5)">+</div></div></div>
+            <div class="pdiv"></div>
+          </div>
+          <div class="prow"><span class="plbl">Débit nominal (m³/h)</span><div class="pctrl"><div class="pm" onclick="chP('v3vDebit',-0.5)">−</div><span class="pv" id="v3vDebit">2.0</span><div class="pm" onclick="chP('v3vDebit',0.5)">+</div></div></div>
+          <div class="pdiv"></div>
+          <div class="prow"><span class="plbl">Pression différentielle</span><div class="pctrl"><div class="pm" onclick="chP('v3vPression',-0.1)">−</div><span class="pv" id="v3vPression">1.5b</span><div class="pm" onclick="chP('v3vPression',0.1)">+</div></div></div>
+          <div class="pdiv"></div>
+          <div class="prow"><span class="plbl">Temps de course (s)</span><div class="pctrl"><div class="pm" onclick="chP('v3vCourse',-5)">−</div><span class="pv" id="v3vCourse">120s</span><div class="pm" onclick="chP('v3vCourse',5)">+</div></div></div>
+          <div class="pdiv"></div>
+          <div class="prow"><span class="plbl">Hystérésis vanne</span><div class="pctrl"><div class="pm" onclick="chP('v3vHyst',-1)">−</div><span class="pv" id="v3vHyst">3%</span><div class="pm" onclick="chP('v3vHyst',1)">+</div></div></div>
+          <div class="pdiv"></div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-size:.73rem;font-weight:700;color:var(--muted)">Débit instantané</span>
+              <span style="font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;color:var(--blue)" id="v3vLive">— m³/h</span>
+            </div>
+            <div class="flow-bar-bg"><div class="flow-bar-fill" id="v3vBar" style="width:0%"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--muted);font-weight:700;margin-top:3px"><span>0</span><span id="v3vMax2">2.0 m³/h max</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
         <div class="ch"><span>🔧</span><h3>Système</h3></div>
         <div class="cb">
           <div class="prow"><span class="plbl">Langue</span><select class="psel"><option>Français</option><option>English</option><option>Español</option></select></div>
           <div class="pdiv"></div>
           <div class="prow"><span class="plbl">Sonde régulation</span>
-            <div class="pctrl" style="gap:6px">
-              <label class="tog"><input type="checkbox" checked/><div class="tt"></div><div class="th"></div></label>
-              <select class="psel"><option>Ambiance</option><option>Soufflage</option></select>
-            </div>
+            <div class="pctrl" style="gap:5px"><label class="tog"><input type="checkbox" checked/><div class="tt"></div><div class="th"></div></label><select class="psel"><option>Ambiance</option><option>Soufflage</option></select></div>
           </div>
           <div class="pdiv"></div>
           <div class="prow"><span class="plbl">Activation vidange</span><label class="tog"><input type="checkbox"/><div class="tt"></div><div class="th"></div></label></div>
@@ -370,142 +582,162 @@
           <div class="prow"><span class="plbl">Intervalle maintenance</span><div class="pctrl"><div class="pm" onclick="chP('maintenance',-50)">−</div><span class="pv" id="maintenance">300h</span><div class="pm" onclick="chP('maintenance',50)">+</div></div></div>
         </div>
       </div>
-      <div class="card">
-        <div class="ch"><span>🔄</span><h3>Vanne 3 voies – Débit d'eau</h3></div>
-        <div class="cb">
-          <div class="prow">
-            <span class="plbl">Activation vanne 3 voies</span>
-            <label class="tog"><input type="checkbox" id="v3vTog" onchange="onV3V()" checked/><div class="tt"></div><div class="th"></div></label>
-          </div>
-          <div class="pdiv"></div>
-          <div id="v3vParams">
-            <div class="prow"><span class="plbl">Mode de régulation</span>
-              <select class="psel" id="v3vMode" onchange="onV3VMode()">
-                <option>Proportionnel</option>
-                <option>Tout ou rien</option>
-                <option>Manuel</option>
-              </select>
-            </div>
-            <div class="pdiv"></div>
-            <div class="prow"><span class="plbl">Ouverture mini vanne</span><div class="pctrl"><div class="pm" onclick="chP('v3vMin',-5)">−</div><span class="pv" id="v3vMin">10%</span><div class="pm" onclick="chP('v3vMin',5)">+</div></div></div>
-            <div class="pdiv"></div>
-            <div class="prow"><span class="plbl">Ouverture maxi vanne</span><div class="pctrl"><div class="pm" onclick="chP('v3vMax',-5)">−</div><span class="pv" id="v3vMax">100%</span><div class="pm" onclick="chP('v3vMax',5)">+</div></div></div>
-            <div class="pdiv"></div>
-            <div id="v3vManuel" style="display:none">
-              <div class="prow"><span class="plbl">Ouverture manuelle</span><div class="pctrl"><div class="pm" onclick="chP('v3vManu',-5)">−</div><span class="pv" id="v3vManu">50%</span><div class="pm" onclick="chP('v3vManu',5)">+</div></div></div>
-              <div class="pdiv"></div>
-            </div>
-            <div class="prow"><span class="plbl">Débit nominal (m³/h)</span><div class="pctrl"><div class="pm" onclick="chP('v3vDebit',-0.5)">−</div><span class="pv" id="v3vDebit">2.0</span><div class="pm" onclick="chP('v3vDebit',0.5)">+</div></div></div>
-            <div class="pdiv"></div>
-            <div class="prow"><span class="plbl">Pression différentielle</span><div class="pctrl"><div class="pm" onclick="chP('v3vPression',-0.1)">−</div><span class="pv" id="v3vPression">1.5b</span><div class="pm" onclick="chP('v3vPression',0.1)">+</div></div></div>
-            <div class="pdiv"></div>
-            <div class="prow"><span class="plbl">Temps course vanne (s)</span><div class="pctrl"><div class="pm" onclick="chP('v3vCourse',-5)">−</div><span class="pv" id="v3vCourse">120s</span><div class="pm" onclick="chP('v3vCourse',5)">+</div></div></div>
-            <div class="pdiv"></div>
-            <div class="prow"><span class="plbl">Hystérésis vanne</span><div class="pctrl"><div class="pm" onclick="chP('v3vHyst',-1)">−</div><span class="pv" id="v3vHyst">3%</span><div class="pm" onclick="chP('v3vHyst',1)">+</div></div></div>
-            <div class="pdiv"></div>
-            <!-- Barre de débit temps réel -->
-            <div style="margin-top:4px">
-              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-                <span style="font-size:0.75rem;font-weight:700;color:var(--muted)">Débit actuel</span>
-                <span style="font-family:'Rajdhani',sans-serif;font-size:0.95rem;font-weight:700;color:var(--blue)" id="v3vLive">1.4 m³/h</span>
-              </div>
-              <div style="background:rgba(255,255,255,0.07);border-radius:6px;height:8px;overflow:hidden">
-                <div id="v3vBar" style="background:linear-gradient(90deg,var(--blue),var(--green));height:100%;width:70%;border-radius:6px;transition:width .5s"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="btn-g" onclick="toast('✅ Réglages sauvegardés')">Sauvegarder</button>
+      <button class="btn-g" onclick="saveReglages()">💾 Envoyer les réglages à l'appareil</button>
       <div class="pb"></div>
     </div>
 
-    <!-- ═══ HORAIRE ═══ -->
+    <!-- ════ HORAIRE ════ -->
     <div class="screen" id="s-horaire">
       <div class="pt">🕐 Programme horaire</div>
       <div class="card">
-        <div class="ch">
-          <label class="tog"><input type="checkbox" checked/><div class="tt"></div><div class="th"></div></label>
-          <h3>Activation programme</h3>
-        </div>
-        <div style="padding:10px" id="slotsContainer"></div>
-        <div style="padding:0 10px 12px;display:flex;flex-direction:column;gap:8px">
+        <div class="ch"><label class="tog"><input type="checkbox" checked/><div class="tt"></div><div class="th"></div></label><h3>Activation programme</h3></div>
+        <div style="padding:9px" id="slotsContainer"></div>
+        <div style="padding:0 9px 11px;display:flex;flex-direction:column;gap:7px">
           <button class="btn-b" onclick="addSlot()">+ Ajouter un créneau</button>
-          <button class="btn-g" onclick="toast('✅ Programme sauvegardé')">Sauvegarder</button>
+          <button class="btn-g" onclick="saveHoraire()">💾 Envoyer le programme</button>
         </div>
       </div>
       <div class="pb"></div>
     </div>
 
-    <!-- ═══ WIFI ═══ -->
+    <!-- ════ RÉSEAU ════ -->
     <div class="screen" id="s-wifi">
-      <div class="pt">📶 WiFi</div>
+      <div class="pt">📶 Réseau & Connexion</div>
       <div class="card">
-        <div class="ch"><span>📶</span><h3>Réseau WiFi</h3></div>
+        <div class="ch"><span id="csi">🔴</span><h3 id="csh">Non connecté</h3></div>
         <div class="cb">
-          <div class="prow"><span class="plbl">Activation WiFi</span><label class="tog"><input type="checkbox" checked/><div class="tt"></div><div class="th"></div></label></div>
-          <div class="wf"><div class="wl">Nom de l'hôte</div><input class="wi" type="text" value="aclimax"/></div>
-          <div class="wf"><div class="wl">SSID</div><input class="wi" type="text" value="TP-Link_085C"/></div>
-          <div class="wf"><div class="wl">Mot de passe</div><input class="wi" type="password" value="pass123"/></div>
-          <div class="infobox">
-            <div class="ir"><span class="ik">MAC</span><span class="iv">D0:CF:13:27:DB:50</span></div>
-            <div class="ir"><span class="ik">IP</span><span class="iv">192.168.1.100</span></div>
-            <div class="ir"><span class="ik">Sous-réseau</span><span class="iv">255.255.255.0</span></div>
-            <div class="ir"><span class="ik">Passerelle</span><span class="iv">192.168.1.1</span></div>
-            <div class="ir"><span class="ik">RSSI</span><span class="iv">-50 dBm 📶</span></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div id="csdot" style="width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0;transition:background .3s"></div>
+            <span style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;flex:1" id="cslbl">En attente…</span>
+            <span style="font-size:.7rem;font-weight:700;color:var(--muted)" id="pingMs"></span>
           </div>
-          <button class="btn-r" onclick="toast('🔌 Déconnecté')">Déconnexion</button>
-          <button class="btn-g" onclick="toast('✅ WiFi sauvegardé')">Sauvegarder</button>
+          <div class="latbar-bg"><div class="latbar-fill" id="latBar"></div></div>
+          <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-align:right" id="pingBadge">Signal : —</div>
+          <div id="connInfoBox" style="display:none">
+            <div class="infobox">
+              <div class="ir"><span class="ik">Appareil</span><span class="iv" id="ciName">—</span></div>
+              <div class="ir"><span class="ik">IP</span><span class="iv" id="ciIP">—</span></div>
+              <div class="ir"><span class="ik">Latence</span><span class="iv" id="ciPing">—</span></div>
+              <div class="ir"><span class="ik">API REST</span><span class="iv" id="ciApi">—</span></div>
+              <div class="ir"><span class="ik">Dernière sync</span><span class="iv" id="ciSync">—</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:7px">
+            <button class="btn-g" id="btnReconn" onclick="reconnectCurrent()" style="flex:1">🔗 Reconnecter</button>
+            <button class="btn-r" onclick="logoutAll()">🚪 Déconnexion</button>
+            <button class="btn-o" onclick="quickPing()">📡 Ping</button>
+          </div>
         </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span>🌐</span><h3>IP locale (appareil)</h3></div>
+        <div class="cb">
+          <div class="prow"><span class="plbl">Mode IP</span>
+            <select class="psel" id="ipMode" onchange="onIpMode()">
+              <option value="dhcp">DHCP (automatique)</option>
+              <option value="static">Statique (manuelle)</option>
+            </select>
+          </div>
+          <div id="staticFields" style="display:none">
+            <div class="pdiv" style="margin:5px 0"></div>
+            <div class="wf" style="margin-bottom:7px"><div class="wl">Adresse IP statique</div>
+              <div class="ip-row">
+                <input class="ip-oct" type="number" id="lip1" value="192" min="0" max="255" oninput="co(this)"/><span class="ip-dot">.</span>
+                <input class="ip-oct" type="number" id="lip2" value="168" min="0" max="255" oninput="co(this)"/><span class="ip-dot">.</span>
+                <input class="ip-oct" type="number" id="lip3" value="1" min="0" max="255" oninput="co(this)"/><span class="ip-dot">.</span>
+                <input class="ip-oct" type="number" id="lip4" value="50" min="0" max="255" oninput="co(this)"/>
+              </div>
+            </div>
+            <div class="wf" style="margin-bottom:7px"><div class="wl">Masque</div>
+              <select class="wi" id="ipMask"><option value="255.255.255.0" selected>/24 – 255.255.255.0</option><option value="255.255.0.0">/16 – 255.255.0.0</option><option value="255.0.0.0">/8 – 255.0.0.0</option></select>
+            </div>
+            <div class="wf" style="margin-bottom:7px"><div class="wl">Passerelle</div><input class="wi" id="ipGW" value="192.168.1.1"/></div>
+            <div class="wf"><div class="wl">DNS</div><input class="wi" id="ipDNS" value="8.8.8.8"/></div>
+            <div style="margin-top:7px"></div>
+          </div>
+          <button class="btn-g" onclick="applyNetConfig()">⚡ Appliquer</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span>📶</span><h3>WiFi de l'appareil</h3>
+          <label class="tog" style="margin-left:auto"><input type="checkbox" id="wifiTog" onchange="onWifiTog()" checked/><div class="tt"></div><div class="th"></div></label>
+        </div>
+        <div class="cb" id="wifiFields">
+          <div class="wf"><div class="wl">Nom de l'hôte</div><input class="wi" id="wHost" value="aclimax"/></div>
+          <div class="wf"><div class="wl">SSID</div><input class="wi" id="wSSID" value=""/></div>
+          <div class="wf"><div class="wl">Mot de passe WiFi</div>
+            <div style="position:relative"><input class="wi" type="password" id="wPass" style="padding-right:40px"/>
+              <span onclick="togglePwd('wPass')" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);cursor:pointer;opacity:.5">👁️</span>
+            </div>
+          </div>
+          <div class="infobox">
+            <div class="ir"><span class="ik">MAC</span><span class="iv" id="wMAC">—</span></div>
+            <div class="ir"><span class="ik">IP attribuée</span><span class="iv" id="wCurrentIP">—</span></div>
+            <div class="ir"><span class="ik">RSSI</span><span class="iv" id="wRSSI">—</span></div>
+          </div>
+          <div style="display:flex;gap:7px">
+            <button class="btn-g" onclick="saveWifi()" style="flex:1">💾 Sauvegarder</button>
+            <button class="btn-r" onclick="disconnectWifi()">Déconn.</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span>💻</span><h3>Console API</h3>
+          <button onclick="clearLog()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;font-weight:700">Effacer</button>
+        </div>
+        <div style="padding:8px"><div class="api-log" id="apiLog"><div class="log-entry info">── Console API FoxAir ──</div></div></div>
       </div>
       <div class="pb"></div>
     </div>
 
-    <!-- ═══ PLUS ═══ -->
+    <!-- ════ PLUS ════ -->
     <div class="screen" id="s-plus">
       <div class="pt">⋯ Plus</div>
-
       <div class="card">
-        <div class="ch"><span>🔆</span><h3>Mode traitement UV</h3></div>
+        <div class="ch"><span>🔆</span><h3>Mode UV</h3></div>
         <div class="cb">
           <div class="prow"><span class="plbl">Mode</span><select class="psel" id="uvMode" onchange="onUv()"><option>Permanent</option><option>Cyclique</option></select></div>
           <div id="uvCyc" style="display:none">
-            <div class="pdiv" style="margin:4px 0"></div>
+            <div class="pdiv" style="margin:3px 0"></div>
             <div class="prow"><span class="plbl">Durée ON</span><div class="pctrl"><div class="pm" onclick="chP('uvOn',-1)">−</div><span class="pv" id="uvOn">5min</span><div class="pm" onclick="chP('uvOn',1)">+</div></div></div>
-            <div class="pdiv" style="margin:4px 0"></div>
+            <div class="pdiv" style="margin:3px 0"></div>
             <div class="prow"><span class="plbl">Durée OFF</span><div class="pctrl"><div class="pm" onclick="chP('uvOff',-1)">−</div><span class="pv" id="uvOff">10min</span><div class="pm" onclick="chP('uvOff',1)">+</div></div></div>
           </div>
-          <button class="btn-g" onclick="toast('✅ UV sauvegardé')">Sauvegarder</button>
+          <button class="btn-g" onclick="saveUV()">💾 Sauvegarder</button>
         </div>
       </div>
-
       <div class="card">
         <div class="ch"><span>📅</span><h3>Date & Heure</h3></div>
         <div class="cb">
-          <div class="prow"><span class="plbl">Date</span><div class="datev" id="dtDate">04/03/2026</div></div>
-          <div class="prow">
-            <span class="plbl">Heure</span>
+          <div class="prow"><span class="plbl">Date</span><div class="datev" id="dtDate">--/--/----</div></div>
+          <div class="prow"><span class="plbl">Heure</span>
             <div class="tsrow">
-              <div class="tscol"><div class="tsa" onclick="chH(1)">∧</div><div class="tsn" id="tsH">14</div><div class="tsa" onclick="chH(-1)">∨</div></div>
+              <div class="tscol"><div class="tsa" onclick="chH(1)">∧</div><div class="tsn" id="tsH">--</div><div class="tsa" onclick="chH(-1)">∨</div></div>
               <div class="tsp">:</div>
-              <div class="tscol"><div class="tsa" onclick="chM(1)">∧</div><div class="tsn" id="tsM">52</div><div class="tsa" onclick="chM(-1)">∨</div></div>
+              <div class="tscol"><div class="tsa" onclick="chM(1)">∧</div><div class="tsn" id="tsM">--</div><div class="tsa" onclick="chM(-1)">∨</div></div>
             </div>
           </div>
           <div class="prow"><span class="plbl">Heure auto</span><label class="tog"><input type="checkbox" checked/><div class="tt"></div><div class="th"></div></label></div>
-          <button class="btn-g" onclick="toast('✅ Date/Heure sauvegardée')">Sauvegarder</button>
+          <button class="btn-g" onclick="saveDateTime()">💾 Sauvegarder</button>
         </div>
       </div>
-
       <div class="card">
         <div class="ch"><span>👤</span><h3>Administration</h3></div>
         <div class="cb">
-          <div class="wf"><div class="wl">Mot de passe</div><input class="wi" type="password" value="0000"/></div>
-          <div class="infobox">
-            <div class="ir"><span class="ik">Version firmware</span><span class="iv">v1.0.2</span></div>
-            <div class="ir"><span class="ik">N° de série</span><span class="iv">FA-2026-0384</span></div>
-            <div class="ir"><span class="ik">Fonctionnement</span><span class="iv">8h</span></div>
+          <div class="wf"><div class="wl">Nouveau mot de passe</div>
+            <div style="position:relative"><input class="wi" type="password" id="newPwd" placeholder="Nouveau MDP"/>
+              <span onclick="togglePwd('newPwd')" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);cursor:pointer;opacity:.5">👁️</span>
+            </div>
           </div>
-          <button class="btn-g" onclick="toast('✅ Mot de passe mis à jour')">Mettre à jour</button>
+          <div class="infobox">
+            <div class="ir"><span class="ik">Firmware</span><span class="iv" id="fwVer">—</span></div>
+            <div class="ir"><span class="ik">N° série</span><span class="iv" id="serialNo">—</span></div>
+            <div class="ir"><span class="ik">Fonctionnement</span><span class="iv" id="uptime">—</span></div>
+          </div>
+          <div style="display:flex;gap:7px">
+            <button class="btn-g" onclick="saveAdmin()" style="flex:1">💾 Changer MDP</button>
+            <button class="btn-r" onclick="logoutAll()">🚪 Déconnexion</button>
+          </div>
         </div>
       </div>
       <div class="pb"></div>
@@ -513,87 +745,547 @@
 
   </div><!-- /content -->
 
-  <!-- BOTTOM NAV -->
   <div class="bnav">
     <button class="nb active" id="nb-home" onclick="go('home',this)"><span class="ni">🏠</span><span class="nl">Accueil</span></button>
+    <button class="nb" id="nb-machines" onclick="go('machines',this)"><span class="ni">🖥️</span><span class="nl">Appareils</span></button>
     <button class="nb" id="nb-reglages" onclick="go('reglages',this)"><span class="ni">⚙️</span><span class="nl">Réglages</span></button>
     <button class="nb" id="nb-horaire" onclick="go('horaire',this)"><span class="ni">🕐</span><span class="nl">Horaire</span></button>
-    <button class="nb" id="nb-wifi" onclick="go('wifi',this)"><span class="ni">📶</span><span class="nl">WiFi</span></button>
+    <button class="nb" id="nb-wifi" onclick="go('wifi',this)"><span class="ni">📶</span><span class="nl">Réseau</span></button>
     <button class="nb" id="nb-plus" onclick="go('plus',this)"><span class="ni">⋯</span><span class="nl">Plus</span></button>
   </div>
-
-</div>
+</div><!-- /mainApp -->
 
 <div class="toast" id="toastEl"></div>
 
 <script>
-// Clock
-function tick(){
-  const n=new Date();
-  const t=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-  const d=String(n.getDate()).padStart(2,'0')+'/'+String(n.getMonth()+1).padStart(2,'0')+'/'+n.getFullYear();
-  document.getElementById('clk').textContent=t;
-  document.getElementById('ucDate').textContent=d+' – '+t;
-}
-tick();setInterval(tick,10000);
+'use strict';
+// ════════════════════════════════════════════════════
+//  STOCKAGE
+// ════════════════════════════════════════════════════
+const SK = 'foxair_machines';
+let machines = [];   // [{id, name, ip, port, pwd, connected, state:{}}]
+let activeIdx = 0;   // index machine active
+let pollingTimer = null;
+let failCount = 0;
 
-// Nav
-function go(id,btn){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('s-'+id).classList.add('active');
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
-  (btn||document.getElementById('nb-'+id)).classList.add('active');
-  document.querySelector('.content').scrollTop=0;
+function loadMachines(){
+  try{ const d=localStorage.getItem(SK); if(d) machines=JSON.parse(d); }catch(e){}
+  if(!Array.isArray(machines)) machines=[];
+}
+function saveMachines(){
+  try{ localStorage.setItem(SK, JSON.stringify(machines)); }catch(e){}
+}
+function activeMachine(){ return machines[activeIdx]||null; }
+
+// ════════════════════════════════════════════════════
+//  LOGIN
+// ════════════════════════════════════════════════════
+function toggleLoginPwd(){
+  const f=g('loginPwd'); f.type=f.type==='password'?'text':'password';
+}
+function renderLoginList(){
+  const list=g('lmList');
+  if(!machines.length){
+    list.innerHTML='<div style="font-size:.75rem;color:var(--muted);text-align:center;padding:10px">Aucun appareil enregistré</div>';
+    return;
+  }
+  list.innerHTML=machines.map((m,i)=>`
+    <div class="lm-item ${i===activeIdx?'selected':''}" onclick="selectLoginMachine(${i})">
+      <div class="lm-dot ${m.lastConnected?'on':'off'}"></div>
+      <div style="flex:1">
+        <div class="lm-name">${m.name}</div>
+        <div class="lm-ip">${m.ip}:${m.port}</div>
+      </div>
+      <div class="lm-del" onclick="event.stopPropagation();deleteMachine(${i})" title="Supprimer">✕</div>
+    </div>`).join('');
+}
+function selectLoginMachine(i){
+  activeIdx=i;
+  const m=machines[i];
+  g('loginIP').value=m.ip;
+  // Ne pré-remplit pas le MDP pour sécurité
+  renderLoginList();
+}
+function deleteMachine(i){
+  if(i===activeIdx && machines.length>1) activeIdx=0;
+  machines.splice(i,1);
+  if(activeIdx>=machines.length) activeIdx=Math.max(0,machines.length-1);
+  saveMachines();
+  renderLoginList();
+  toast('🗑️ Appareil supprimé');
 }
 
-// Device
-function selDev(el,n){document.querySelectorAll('.dchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');toast('📡 '+n)}
+async function doLogin(){
+  const ipRaw=g('loginIP').value.trim();
+  const pwd=g('loginPwd').value;
+  if(!ipRaw){showLoginErr('Entrez une IP ou un nom d\'hôte');return;}
+  const btn=g('loginBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Connexion…';
+  g('loginErr').style.display='none';
 
-// Mode
-function onMode(){
-  const a=document.getElementById('modeTog').checked;
-  document.getElementById('lAuto').classList.toggle('on',a);
-  document.getElementById('lManu').classList.toggle('on',!a);
-  toast(a?'Mode Auto':'Mode Manuel');
+  // Cherche si cette IP est déjà dans la liste, sinon crée
+  let idx=machines.findIndex(m=>m.ip===ipRaw);
+  if(idx<0){
+    machines.push({id:Date.now(),name:ipRaw,ip:ipRaw,port:80,pwd,lastConnected:false,state:{}});
+    idx=machines.length-1;
+    saveMachines();
+  } else {
+    machines[idx].pwd=pwd;
+  }
+  activeIdx=idx;
+
+  const ok=await tryConnect(activeIdx, pwd);
+  btn.disabled=false; btn.innerHTML='🔗 Se connecter';
+  if(ok){
+    machines[activeIdx].lastConnected=true;
+    saveMachines();
+    showMainApp();
+  } else {
+    showLoginErr('Connexion échouée — vérifiez l\'IP et le mot de passe');
+  }
+}
+function showLoginErr(msg){ const e=g('loginErr'); e.textContent=msg; e.style.display='block'; }
+
+// ════════════════════════════════════════════════════
+//  ADD MACHINE MODAL
+// ════════════════════════════════════════════════════
+function showAddModal(){ g('addMachineModal').classList.add('show'); }
+function hideAddModal(){ g('addMachineModal').classList.remove('show'); }
+function addMachine(){
+  const name=g('newMachName').value.trim()||'FoxAir';
+  const ip=g('newMachIP').value.trim();
+  const port=parseInt(g('newMachPort').value)||80;
+  const pwd=g('newMachPwd').value;
+  if(!ip){toast('⚠️ IP obligatoire');return;}
+  const exists=machines.findIndex(m=>m.ip===ip&&m.port===port);
+  if(exists>=0){toast('⚠️ Cet appareil est déjà dans la liste');hideAddModal();return;}
+  machines.push({id:Date.now(),name,ip,port,pwd,lastConnected:false,state:{}});
+  saveMachines();
+  hideAddModal();
+  g('newMachName').value='';g('newMachIP').value='';g('newMachPort').value=80;g('newMachPwd').value='';
+  renderLoginList();
+  renderMachGrid();
+  buildMachSelect();
+  toast('✅ Appareil ajouté : '+name);
 }
 
-// Fan
-function setFan(v,i){
-  document.getElementById('fanV').textContent=v+'%';
-  document.getElementById('qFan').textContent=v+'%';
-  document.getElementById('fanDots').querySelectorAll('.bigdot').forEach((d,j)=>d.classList.toggle('on',j===i));
-  toast('Ventilation → '+v+'%');
-}
-function setWat(v,i){
-  document.getElementById('watV').textContent=v+'%';
-  document.getElementById('qWat').textContent=v+'%';
-  document.getElementById('watDots').querySelectorAll('.bigdot').forEach((d,j)=>d.classList.toggle('on',j===i));
-  toast('Aspersion → '+v+'%');
-}
-
-// Consigne
-let cons=13.5;
-function chCons(d){
-  cons=Math.round((cons+d)*10)/10;
-  const s=cons.toFixed(1)+'°C';
-  document.getElementById('consV').textContent=s;
-  document.getElementById('qCons').textContent=s;
-  toast('Consigne : '+s);
+// ════════════════════════════════════════════════════
+//  AFFICHER L'APP
+// ════════════════════════════════════════════════════
+function showMainApp(){
+  g('loginScreen').style.display='none';
+  g('mainApp').classList.add('show');
+  buildMachSelect();
+  renderMachGrid();
+  initCurrentMachine();
+  renderSlots();
+  tick();
 }
 
-// Power
-let pwrOn=true;
-function togglePwr(){
+function initCurrentMachine(){
+  const m=activeMachine(); if(!m)return;
+  // Remplir les champs WiFi avec les données de la machine
+  sv('wSSID', m.ssid||'');
+  sv('wHost', m.hostname||m.name);
+  // Afficher les infos déjà connues
+  if(m.state&&m.state.temperature) applyData(m.state);
+  startPolling();
+}
+
+function buildMachSelect(){
+  const sel=g('machSelect');
+  sel.innerHTML=machines.map((m,i)=>`<option value="${i}" ${i===activeIdx?'selected':''}>${m.name}</option>`).join('');
+}
+function switchMachine(){
+  const newIdx=parseInt(g('machSelect').value);
+  if(newIdx===activeIdx)return;
+  stopPolling();
+  activeIdx=newIdx;
+  resetUIForMachine();
+  initCurrentMachine();
+  toast('📡 Appareil : '+activeMachine().name);
+  renderMachGrid();
+}
+
+function resetUIForMachine(){
+  const m=activeMachine();
+  setEl('ucStatus','— En attente —');
+  g('ucStatus').className='uc-ok wait';
+  setEl('sAmb','--.-°C');setEl('sHygro','--%');setEl('sSortie','--.-°C');
+  setEl('connBadgeTxt','Non connecté');
+  g('connBadge').className='conn-badge disconnected';
+  if(m&&m.state&&m.state.temperature) applyData(m.state);
+}
+
+// ════════════════════════════════════════════════════
+//  MACHINE GRID (onglet Appareils)
+// ════════════════════════════════════════════════════
+function renderMachGrid(){
+  const grid=g('machGrid');
+  if(!machines.length){grid.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:.85rem">Aucun appareil — cliquez sur ＋</div>';return;}
+  grid.innerHTML=machines.map((m,i)=>{
+    const s=m.state||{};
+    const dotCls=m.connected?'on':m.lastConnected?'wait':'off';
+    const active=i===activeIdx?'active-mach':'';
+    const temp=s.temperature!=null?s.temperature.toFixed(1)+'°C':'--.-°C';
+    const hum=s.humidity!=null?s.humidity+'%':'--%';
+    const fan=s.fan!=null?s.fan+'%':'--%';
+    const pwr=s.power!=null?(s.power?'ON':'OFF'):'--';
+    return `<div class="mach-card ${active}" onclick="jumpToMachine(${i})">
+      <div class="mach-card-head">
+        <div class="mach-card-dot ${dotCls}"></div>
+        <div style="flex:1"><div class="mach-card-name">${m.name}</div><div class="mach-card-ip">${m.ip}:${m.port}</div></div>
+        <div class="mach-card-actions">
+          <div class="mca" onclick="event.stopPropagation();jumpToMachine(${i})" title="Contrôler">🎮</div>
+          <div class="mca" onclick="event.stopPropagation();reconnectMachine(${i})" title="Reconnecter">🔗</div>
+          <div class="mca" onclick="event.stopPropagation();deleteMachine(${i})" title="Supprimer" style="color:var(--red)">✕</div>
+        </div>
+      </div>
+      <div class="mach-card-stats">
+        <div class="mcs"><span class="mcs-icon">🏠</span><div><div class="mcs-v">${temp}</div><div class="mcs-l">Ambiance</div></div></div>
+        <div class="mcs"><span class="mcs-icon">💧</span><div><div class="mcs-v">${hum}</div><div class="mcs-l">Hygro</div></div></div>
+        <div class="mcs"><span class="mcs-icon">🌀</span><div><div class="mcs-v">${fan}</div><div class="mcs-l">Ventilo</div></div></div>
+        <div class="mcs"><span class="mcs-icon">⏻</span><div><div class="mcs-v" style="color:${s.power?'var(--green)':'var(--red)'}">${pwr}</div><div class="mcs-l">État</div></div></div>
+      </div>
+      <div class="mach-card-foot">
+        <button class="btn-g" onclick="event.stopPropagation();quickTogglePwr(${i})" style="flex:1;padding:7px;font-size:.75rem">${s.power===false?'▶ Démarrer':'⏸ Arrêter'}</button>
+        <button class="btn-b" onclick="event.stopPropagation();jumpToMachine(${i})" style="flex:1;padding:7px;font-size:.75rem">🎮 Contrôler</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function jumpToMachine(i){
+  if(i!==activeIdx){
+    stopPolling();activeIdx=i;
+    buildMachSelect();resetUIForMachine();initCurrentMachine();
+  }
+  go('home',g('nb-home'));
+}
+
+async function reconnectMachine(i){
+  const m=machines[i];
+  toast('🔗 Reconnexion à '+m.name+'…');
+  const ok=await tryConnect(i,m.pwd);
+  if(ok){toast('✅ Connecté : '+m.name);}else{toast('❌ Échec : '+m.name);}
+  renderMachGrid();
+}
+
+async function quickTogglePwr(i){
+  const m=machines[i];
+  const newPwr=!(m.state&&m.state.power!==false);
+  await apiPOST_machine(i,'/api/power',{on:newPwr});
+  if(!m.state) m.state={};
+  m.state.power=newPwr;
+  renderMachGrid();
+  if(i===activeIdx){
+    pwrOn=newPwr;
+    g('pwrBtn').className='pwr '+(pwrOn?'on':'off');
+    g('fanIcon').style.animationPlayState=pwrOn?'running':'paused';
+    setEl('qPwr',pwrOn?'ON':'OFF');
+    g('qPwr').style.color=pwrOn?'var(--green)':'var(--red)';
+  }
+  toast(newPwr?'✅ '+m.name+' démarré':'⛔ '+m.name+' arrêté');
+}
+
+// ════════════════════════════════════════════════════
+//  COUCHE API REST
+// ════════════════════════════════════════════════════
+function baseURL(i){ const m=machines[i||activeIdx]; return m?`http://${m.ip}:${m.port}`:''; }
+
+async function apiGET(path, timeout=5000, idx=null){
+  const i=idx!==null?idx:activeIdx;
+  const m=machines[i]; if(!m)return{ok:false,err:'no machine'};
+  const c=new AbortController(), t=setTimeout(()=>c.abort(),timeout);
+  const t0=Date.now();
+  const authH={'Accept':'application/json'};
+  if(m.pwd) authH['X-Auth-Token']=btoa(m.pwd); // Auth simple via header
+  try{
+    const r=await fetch(`http://${m.ip}:${m.port}`+path,{method:'GET',mode:'cors',cache:'no-store',headers:authH,signal:c.signal});
+    clearTimeout(t);
+    if(r.status===401){return{ok:false,err:'401 Non autorisé',auth:true};}
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    return{ok:true,data,ms:Date.now()-t0};
+  }catch(e){
+    clearTimeout(t);
+    return{ok:false,err:e.message,ms:Date.now()-t0,
+      cors:e.name==='TypeError'||e.message.includes('Failed to fetch')};
+  }
+}
+
+async function apiPOST(path, payload, timeout=4000){
+  return apiPOST_machine(activeIdx, path, payload, timeout);
+}
+
+async function apiPOST_machine(idx, path, payload, timeout=4000){
+  const m=machines[idx]; if(!m)return{ok:false};
+  const c=new AbortController(), t=setTimeout(()=>c.abort(),timeout);
+  const t0=Date.now();
+  const headers={'Content-Type':'application/json','Accept':'application/json'};
+  if(m.pwd) headers['X-Auth-Token']=btoa(m.pwd);
+  try{
+    const r=await fetch(`http://${m.ip}:${m.port}`+path,{method:'POST',mode:'cors',cache:'no-store',headers,body:JSON.stringify(payload),signal:c.signal});
+    clearTimeout(t);
+    const ms=Date.now()-t0;
+    if(r.status===401){log('err','POST '+path+' → 401 Non autorisé');return{ok:false,err:'401',auth:true};}
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    let data={};try{data=await r.json();}catch(x){}
+    log('ok',`→ POST ${path} ${JSON.stringify(payload)} [${ms}ms] ✓`);
+    return{ok:true,data,ms};
+  }catch(e){
+    clearTimeout(t);
+    const ms=Date.now()-t0;
+    if(e.name==='AbortError'){log('err',`→ POST ${path} TIMEOUT`);return{ok:false,err:'timeout',ms};}
+    log('warn',`→ POST ${path} ${JSON.stringify(payload)} [${ms}ms] CORS/réseau`);
+    return{ok:true,cors:true,ms};
+  }
+}
+
+// ── Connexion d'une machine (retourne true/false)
+async function tryConnect(idx, pwd){
+  const m=machines[idx]; if(!m)return false;
+  m.pwd=pwd||m.pwd;
+  const res=await apiGET('/api/status',6000,idx);
+  if(res.ok){
+    m.connected=true; m.state=res.data;
+    if(idx===activeIdx){applyData(res.data);updateConnectedUI(res.ms,m.name,m.ip,true);}
+    log('ok',`[${m.name}] Connecté en ${res.ms}ms — JSON ✅`);
+    return true;
+  } else if(res.cors){
+    // Appareil présent mais CORS
+    m.connected=true;
+    if(idx===activeIdx) updateConnectedUI(50,m.name,m.ip,false);
+    log('warn',`[${m.name}] CORS — commandes envoyées sans retour`);
+    return true;
+  } else if(res.auth){
+    log('err',`[${m.name}] Erreur d'authentification`);
+    return false;
+  }
+  log('err',`[${m.name}] Connexion échouée : ${res.err}`);
+  return false;
+}
+
+function startPolling(){
+  stopPolling();
+  pollingTimer=setInterval(async()=>{
+    const m=activeMachine(); if(!m||!m.connected)return;
+    const r=await apiGET('/api/status',3000);
+    if(r.ok){
+      failCount=0; m.state=r.data; applyData(r.data); updateSyncTime();
+      renderMachGrid();
+    } else {
+      failCount++;
+      if(failCount===3){setBadge('connecting','Reconnexion…');log('warn','3 erreurs — signal instable');}
+      if(failCount>=6){m.connected=false;setBadge('disconnected','Déconnecté');stopPolling();log('err','Déconnexion auto');}
+    }
+  },5000);
+  log('info',`Polling démarré → ${activeMachine()?.name}`);
+}
+function stopPolling(){clearInterval(pollingTimer);pollingTimer=null;failCount=0;}
+
+async function reconnectCurrent(){
+  const m=activeMachine(); if(!m)return;
+  setBadge('connecting','Reconnexion…');
+  const ok=await tryConnect(activeIdx,m.pwd);
+  if(ok){setBadge('connected',m.name);startPolling();toast('✅ Connecté : '+m.name);}
+  else{setBadge('disconnected','Échec');toast('❌ Connexion échouée');}
+}
+async function quickPing(){
+  const m=activeMachine(); if(!m){toast('⚠️ Aucun appareil');return;}
+  const r=await apiGET('/api/status',3000);
+  if(r.ok){setLatBar(r.ms);toast('📡 Ping OK — '+r.ms+'ms');}
+  else toast('❌ Pas de réponse — '+m.ip);
+}
+
+// ── Applique les données JSON de l'API ──
+function applyData(d){
+  if(!d)return;
+  if(d.temperature!=null){setEl('sAmb',d.temperature.toFixed(1)+'°C');}
+  if(d.humidity!=null){setEl('sHygro',d.humidity+'%');}
+  if(d.temp_out!=null){setEl('sSortie',d.temp_out.toFixed(1)+'°C');}
+  if(d.fan!=null){setEl('fanV',d.fan+'%');setEl('qFan',d.fan+'%');snapDots('fanDots',d.fan,[10,30,60,100]);}
+  if(d.water!=null){setEl('watV',d.water+'%');setEl('qWat',d.water+'%');snapDots('watDots',d.water,[20,50,80,100]);}
+  if(d.setpoint!=null){const s=d.setpoint.toFixed(1)+'°C';setEl('consV',s);setEl('qCons',s);cons=d.setpoint;}
+  if(d.power!=null){
+    pwrOn=!!d.power;
+    g('pwrBtn').className='pwr '+(pwrOn?'on':'off');
+    g('fanIcon').style.animationPlayState=pwrOn?'running':'paused';
+    g('fanIcon').style.opacity=pwrOn?'1':'0.4';
+    setEl('qPwr',pwrOn?'ON':'OFF');
+    g('qPwr').style.color=pwrOn?'var(--green)':'var(--red)';
+  }
+  if(d.mode!=null){
+    const a=d.mode==='auto';
+    g('modeTog').checked=a;
+    g('lAuto').classList.toggle('on',a);
+    g('lManu').classList.toggle('on',!a);
+  }
+  if(d.valve_flow!=null) updateFlow(d.valve_flow);
+  if(d.rssi!=null) setEl('wRSSI',d.rssi+' dBm');
+  if(d.mac!=null) setEl('wMAC',d.mac);
+  if(d.ip!=null) setEl('wCurrentIP',d.ip);
+  if(d.firmware!=null) setEl('fwVer',d.firmware);
+  if(d.serial!=null) setEl('serialNo',d.serial);
+  if(d.uptime!=null) setEl('uptime',d.uptime);
+  if(d.ssid!=null){const m=activeMachine();if(m)m.ssid=d.ssid;sv('wSSID',d.ssid);}
+  const ok=d.status||'Système Ok';
+  g('ucStatus').textContent=ok;
+  g('ucStatus').className='uc-ok '+(ok.toLowerCase().includes('ok')?'ok':'err');
+  setBadge('connected',activeMachine()?.name||'Connecté');
+}
+
+async function manualRefresh(){
+  if(!activeMachine()?.connected){toast('⚠️ Non connecté');return;}
+  const r=await apiGET('/api/status');
+  if(r.ok){applyData(r.data);toast('🔄 Actualisé');}
+  else toast('⚠️ Actualisation échouée');
+}
+
+// ════════════════════════════════════════════════════
+//  COMMANDES → POST REST
+// ════════════════════════════════════════════════════
+let pwrOn=true, cons=13.5;
+
+async function togglePwr(){
   pwrOn=!pwrOn;
-  document.getElementById('pwrBtn').classList.toggle('on',pwrOn);
-  document.getElementById('fanIcon').style.animationPlayState=pwrOn?'running':'paused';
-  document.getElementById('fanIcon').style.opacity=pwrOn?'1':'0.3';
-  document.getElementById('qPwr').textContent=pwrOn?'ON':'OFF';
-  document.getElementById('qPwr').style.color=pwrOn?'var(--green)':'var(--red)';
-  toast(pwrOn?'✅ Démarré':'⛔ Arrêté');
+  g('pwrBtn').className='pwr '+(pwrOn?'on':'off');
+  g('fanIcon').style.animationPlayState=pwrOn?'running':'paused';
+  g('fanIcon').style.opacity=pwrOn?'1':'0.4';
+  setEl('qPwr',pwrOn?'ON':'OFF');
+  g('qPwr').style.color=pwrOn?'var(--green)':'var(--red)';
+  toast(pwrOn?'✅ Mise en marche':'⛔ Arrêt');
+  const m=activeMachine(); if(m&&m.state) m.state.power=pwrOn;
+  await apiPOST('/api/power',{on:pwrOn});
+  renderMachGrid();
 }
 
-// Params
+async function chCons(d){
+  cons=Math.round((cons+d)*10)/10;
+  const s=cons.toFixed(1)+'°C'; setEl('consV',s); setEl('qCons',s);
+  toast('🌡️ Consigne : '+s);
+  await apiPOST('/api/setpoint',{value:cons});
+}
+
+async function setFan(v,i){
+  setEl('fanV',v+'%'); setEl('qFan',v+'%');
+  snapDots('fanDots',v,[10,30,60,100]);
+  toast('🌀 Ventilation → '+v+'%');
+  await apiPOST('/api/fan',{value:v});
+}
+
+async function setWat(v,i){
+  setEl('watV',v+'%'); setEl('qWat',v+'%');
+  snapDots('watDots',v,[20,50,80,100]);
+  toast('💧 Aspersion → '+v+'%');
+  await apiPOST('/api/water',{value:v});
+}
+
+async function setMode(){
+  const a=g('modeTog').checked;
+  g('lAuto').classList.toggle('on',a); g('lManu').classList.toggle('on',!a);
+  toast(a?'🔁 Mode Auto':'🖐️ Mode Manuel');
+  await apiPOST('/api/mode',{mode:a?'auto':'manual'});
+}
+
+async function saveReglages(){
+  const payload={
+    vent_min:P.ventMin.v, vent_max:P.ventMax.v,
+    asp_min:P.aspMin.v, asp_max:P.aspMax.v,
+    hystero:P.hystero.v, hygro_max:P.hygroMax.v,
+    ecart:P.ecart.v, amorçage:P['amorçage'].v,
+    tempo_pompe:P.tempoPompe.v, secu_rempli:P.secuRempli.v,
+    v3v:{enabled:g('v3vTog').checked, mode:g('v3vMode').value,
+      min:P.v3vMin.v, max:P.v3vMax.v, debit:P.v3vDebit.v,
+      pression:P.v3vPression.v, course:P.v3vCourse.v, hyst:P.v3vHyst.v}
+  };
+  const r=await apiPOST('/api/settings',payload);
+  toast(r.ok&&!r.cors?'✅ Réglages envoyés':'✅ Réglages sauvegardés localement');
+}
+
+async function saveHoraire(){
+  await apiPOST('/api/schedule',{slots:SD});
+  toast('✅ Programme envoyé');
+}
+
+async function saveUV(){
+  await apiPOST('/api/uv',{mode:g('uvMode').value,on_min:P.uvOn.v,off_min:P.uvOff.v});
+  toast('✅ UV sauvegardé');
+}
+
+async function saveDateTime(){
+  await apiPOST('/api/datetime',{hour:dh,minute:dm});
+  toast('✅ Date/Heure sauvegardée');
+}
+
+async function saveWifi(){
+  await apiPOST('/api/wifi',{ssid:g('wSSID').value,hostname:g('wHost').value,password:g('wPass').value||undefined});
+  toast('✅ WiFi sauvegardé');
+}
+
+async function disconnectWifi(){
+  g('wifiTog').checked=false; onWifiTog();
+  await apiPOST('/api/wifi_disconnect',{});
+  toast('🔌 WiFi déconnecté');
+}
+
+async function applyNetConfig(){
+  const mode=g('ipMode').value;
+  const ip=['lip1','lip2','lip3','lip4'].map(id=>g(id).value||0).join('.');
+  await apiPOST('/api/network',{mode, ip, mask:g('ipMask').value, gateway:g('ipGW').value, dns:g('ipDNS').value});
+  toast(mode==='static'?'⚡ IP statique : '+ip:'⚡ DHCP activé');
+}
+
+async function saveAdmin(){
+  const np=g('newPwd').value;
+  if(!np){toast('⚠️ Entrez un nouveau MDP');return;}
+  const r=await apiPOST('/api/password',{password:np});
+  if(r.ok&&!r.cors){
+    const m=activeMachine(); if(m){m.pwd=np;saveMachines();}
+    toast('✅ Mot de passe mis à jour');
+  } else toast('✅ MDP sauvegardé localement');
+}
+
+function logoutAll(){
+  stopPolling();
+  machines.forEach(m=>{m.connected=false;});
+  saveMachines();
+  g('mainApp').classList.remove('show');
+  g('loginScreen').style.display='';
+  g('loginIP').value=''; g('loginPwd').value='';
+  renderLoginList();
+  toast('🚪 Déconnecté');
+}
+
+// ════════════════════════════════════════════════════
+//  VANNE 3 VOIES
+// ════════════════════════════════════════════════════
+function onV3V(){
+  const on=g('v3vTog').checked;
+  g('v3vBody').style.opacity=on?'1':'0.4';
+  g('v3vBody').style.pointerEvents=on?'auto':'none';
+  apiPOST('/api/valve',{enabled:on});
+  toast(on?'🔄 Vanne activée':'🔄 Vanne désactivée');
+}
+function onV3VMode(){
+  const m=g('v3vMode').value;
+  g('v3vManuelRow').style.display=m==='manu'?'block':'none';
+  apiPOST('/api/valve_mode',{mode:m});
+}
+function updateFlow(f){
+  const max=P.v3vDebit.v||2;
+  const pct=Math.min(100,Math.round((parseFloat(f)/max)*100));
+  g('v3vBar').style.width=pct+'%';
+  setEl('v3vLive',parseFloat(f).toFixed(2)+' m³/h');
+}
+setInterval(()=>{
+  if(activeMachine()?.connected)return;
+  const m=P.v3vDebit.v||2; updateFlow((m*(0.35+Math.random()*.45)).toFixed(2));
+},4000);
+
+// ════════════════════════════════════════════════════
+//  PARAMÈTRES (−/+)
+// ════════════════════════════════════════════════════
 const P={
   ventMin:{v:10,u:'%',s:5,mn:0,mx:100},ventMax:{v:100,u:'%',s:5,mn:0,mx:100},
   aspMin:{v:20,u:'%',s:5,mn:0,mx:100},aspMax:{v:100,u:'%',s:5,mn:0,mx:100},
@@ -602,78 +1294,146 @@ const P={
   tempoPompe:{v:30,u:'s',s:5,mn:0,mx:120},secuRempli:{v:180,u:'s',s:10,mn:0,mx:600},
   maintenance:{v:300,u:'h',s:50,mn:50,mx:1000},
   uvOn:{v:5,u:'min',s:1,mn:1,mx:60},uvOff:{v:10,u:'min',s:1,mn:1,mx:60},
-  // Vanne 3 voies
   v3vMin:{v:10,u:'%',s:5,mn:0,mx:50},v3vMax:{v:100,u:'%',s:5,mn:50,mx:100},
-  v3vManu:{v:50,u:'%',s:5,mn:0,mx:100},v3vDebit:{v:2.0,u:'',s:0.5,mn:0.5,mx:10},
-  v3vPression:{v:1.5,u:'b',s:0.1,mn:0.1,mx:6},v3vCourse:{v:120,u:'s',s:5,mn:10,mx:300},
+  v3vManu:{v:50,u:'%',s:5,mn:0,mx:100},
+  v3vDebit:{v:2.0,u:'',s:0.5,mn:0.5,mx:20},
+  v3vPression:{v:1.5,u:'b',s:0.1,mn:0.1,mx:6},
+  v3vCourse:{v:120,u:'s',s:5,mn:10,mx:300},
   v3vHyst:{v:3,u:'%',s:1,mn:1,mx:20},
 };
-function onV3V(){
-  const on=document.getElementById('v3vTog').checked;
-  document.getElementById('v3vParams').style.opacity=on?'1':'0.35';
-  document.getElementById('v3vParams').style.pointerEvents=on?'auto':'none';
-  toast(on?'✅ Vanne 3 voies activée':'⛔ Vanne 3 voies désactivée');
-}
-function onV3VMode(){
-  const m=document.getElementById('v3vMode').value;
-  document.getElementById('v3vManuel').style.display=m==='Manuel'?'block':'none';
-  toast('Mode vanne : '+m);
-}
-// Simulate live debit bar
-setInterval(()=>{
-  const p=P['v3vDebit'];if(!p)return;
-  const pct=Math.min(100,Math.max(5,Math.round((p.v/10)*100*(0.6+Math.random()*0.3))));
-  const bar=document.getElementById('v3vBar');
-  const live=document.getElementById('v3vLive');
-  if(bar)bar.style.width=pct+'%';
-  if(live)live.textContent=(p.v*(pct/100)).toFixed(1)+' m³/h';
-},3000);
 function chP(k,d){
   const p=P[k];if(!p)return;
   p.v=Math.max(p.mn,Math.min(p.mx,Math.round((p.v+d)*100)/100));
-  const el=document.getElementById(k);
   const disp=(p.s<1?p.v.toFixed(1):p.v)+p.u;
-  if(el)el.textContent=disp;
-  toast(k+' : '+disp);
+  setEl(k,disp);
+  if(k==='v3vDebit') setEl('v3vMax2',p.v+' m³/h max');
 }
 
-// UV
-function onUv(){document.getElementById('uvCyc').style.display=document.getElementById('uvMode').value==='Cyclique'?'block':'none'}
+// ════════════════════════════════════════════════════
+//  UI HELPERS
+// ════════════════════════════════════════════════════
+function g(id){return document.getElementById(id);}
+function setEl(id,v){const e=g(id);if(e)e.textContent=v;}
+function sv(id,v){const e=g(id);if(e)e.value=v;}
+function pad(n){return String(n).padStart(2,'0');}
+function co(el){if(el.value>255)el.value=255;if(el.value<0)el.value=0;}
+function togglePwd(id){const f=g(id);f.type=f.type==='password'?'text':'password';}
 
-// Date/Time
-let dh=14,dm=52;
-function chH(d){dh=(dh+d+24)%24;document.getElementById('tsH').textContent=String(dh).padStart(2,'0')}
-function chM(d){dm=(dm+d+60)%60;document.getElementById('tsM').textContent=String(dm).padStart(2,'0')}
+function setBadge(s,t){
+  const b=g('connBadge'); b.className='conn-badge '+s;
+  g('connBadgeTxt').textContent=t.length>16?t.substring(0,14)+'…':t;
+}
+function updateConnectedUI(ms,name,ip,apiOk){
+  setBadge('connected',name);
+  setEl('csi','🟢'); setEl('csh','Connecté à '+name);
+  g('csdot').style.background='var(--green)';
+  setEl('cslbl',ip);
+  setEl('ciName',name); setEl('ciIP',ip); setEl('ciPing',ms+'ms');
+  setEl('ciApi',apiOk?'✅ JSON disponible':'⚠️ CORS restreint');
+  g('ciApi').style.color=apiOk?'var(--green)':'var(--orange)';
+  g('connInfoBox').style.display='block';
+  setLatBar(ms); updateSyncTime();
+  setEl('wCurrentIP',ip);
+}
+function setLatBar(ms){
+  const pct=ms<20?100:ms<50?88:ms<100?74:ms<200?55:ms<500?35:15;
+  const col=pct>70?'var(--green)':pct>40?'var(--orange)':'var(--red)';
+  const b=g('latBar'); b.style.width=pct+'%'; b.style.background=col;
+  setEl('pingBadge','Signal : '+pct+'% ('+ms+'ms)');
+  setEl('pingMs',ms+'ms');
+}
+function updateSyncTime(){
+  const n=new Date(); setEl('ciSync',pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds()));
+}
+function snapDots(cid,v,vals){
+  const best=vals.reduce((p,c)=>Math.abs(c-v)<Math.abs(p-v)?c:p,vals[0]);
+  const i=vals.indexOf(best);
+  g(cid).querySelectorAll('.bigdot').forEach((d,j)=>d.classList.toggle('on',j===i));
+}
 
-// Scheduler
-const SD=[{h1:15,m1:21,h2:15,m2:23},{h1:10,m1:0,h2:12,m2:0},{h1:14,m1:0,h2:16,m2:0}];
+// ── Console log ──
+function log(type,msg){
+  const el=g('apiLog'); if(!el)return;
+  const n=new Date();
+  const ts=`[${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}]`;
+  const div=document.createElement('div');
+  div.className='log-entry '+type; div.textContent=ts+' '+msg;
+  el.appendChild(div);
+  while(el.children.length>60) el.removeChild(el.firstChild);
+  el.scrollTop=el.scrollHeight;
+}
+function clearLog(){g('apiLog').innerHTML='<div class="log-entry info">── Console vidée ──</div>';}
+
+// ── Navigation ──
+function go(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  g('s-'+id).classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  (btn||g('nb-'+id))?.classList.add('active');
+  document.querySelector('.content').scrollTop=0;
+}
+
+// ── WiFi UI ──
+function onIpMode(){g('staticFields').style.display=g('ipMode').value==='static'?'block':'none';}
+function onWifiTog(){
+  const on=g('wifiTog').checked;
+  g('wifiFields').style.opacity=on?'1':'0.4';
+  g('wifiFields').style.pointerEvents=on?'auto':'none';
+  toast(on?'📶 WiFi activé':'📴 WiFi désactivé');
+}
+
+// ── UV ──
+function onUv(){g('uvCyc').style.display=g('uvMode').value==='Cyclique'?'block':'none';}
+
+// ── Date/Heure ──
+let dh=new Date().getHours(), dm=new Date().getMinutes();
+function chH(d){dh=(dh+d+24)%24;setEl('tsH',pad(dh));}
+function chM(d){dm=(dm+d+60)%60;setEl('tsM',pad(dm));}
+
+// ── Horloge ──
+function tick(){
+  const n=new Date();
+  setEl('clk',pad(n.getHours())+':'+pad(n.getMinutes()));
+  setEl('ucDate',pad(n.getDate())+'/'+pad(n.getMonth()+1)+'/'+n.getFullYear()+' – '+pad(n.getHours())+':'+pad(n.getMinutes()));
+  setEl('dtDate',pad(n.getDate())+'/'+pad(n.getMonth()+1)+'/'+n.getFullYear());
+  setEl('tsH',pad(dh)); setEl('tsM',pad(dm));
+}
+tick(); setInterval(tick,10000);
+
+// ── Scheduler ──
+const SD=[{h1:8,m1:0,h2:18,m2:0},{h1:10,m1:0,h2:12,m2:0}];
 const DAYS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-function hrs(s){return Array.from({length:24},(_,h)=>`<option${h===s?' selected':''}>${String(h).padStart(2,'0')}</option>`).join('')}
-function mins(s){return Array.from({length:12},(_,m)=>`<option${m*5===s?' selected':''}>${String(m*5).padStart(2,'0')}</option>`).join('')}
+function hrs(s){return Array.from({length:24},(_,h)=>`<option${h===s?' selected':''}>${pad(h)}</option>`).join('');}
+function mns(s){return Array.from({length:12},(_,m)=>`<option${m*5===s?' selected':''}>${pad(m*5)}</option>`).join('');}
 function renderSlots(){
-  document.getElementById('slotsContainer').innerHTML=SD.map((s,i)=>`
+  g('slotsContainer').innerHTML=SD.map((s,i)=>`
     <div class="sslot">
       <div class="sdays">${DAYS.map(d=>`<div class="sdaybtn" onclick="this.classList.toggle('on')">${d}</div>`).join('')}</div>
       <div class="stimes">
         <span class="stlbl">Début</span>
-        <select class="stsel">${hrs(s.h1)}</select><span style="color:var(--muted)">:</span><select class="stsel">${mins(s.m1)}</select>
+        <select class="stsel">${hrs(s.h1)}</select>:<select class="stsel">${mns(s.m1)}</select>
         <span class="stlbl">Fin</span>
-        <select class="stsel">${hrs(s.h2)}</select><span style="color:var(--muted)">:</span><select class="stsel">${mins(s.m2)}</select>
+        <select class="stsel">${hrs(s.h2)}</select>:<select class="stsel">${mns(s.m2)}</select>
         <span class="xbtn" onclick="rmSlot(${i})">✕</span>
       </div>
     </div>`).join('');
 }
-function addSlot(){SD.push({h1:8,m1:0,h2:18,m2:0});renderSlots()}
-function rmSlot(i){SD.splice(i,1);renderSlots()}
-renderSlots();
+function addSlot(){SD.push({h1:8,m1:0,h2:18,m2:0});renderSlots();}
+function rmSlot(i){SD.splice(i,1);renderSlots();}
 
-// Toast
+// ── Toast ──
 let tt;
 function toast(msg){
-  const el=document.getElementById('toastEl');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),1800);
+  const el=g('toastEl'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),2200);
 }
+
+// ════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════
+loadMachines();
+renderLoginList();
+tick();
 </script>
 </body>
 </html>
